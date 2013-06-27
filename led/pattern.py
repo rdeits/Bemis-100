@@ -1,7 +1,7 @@
 #!/usr/bin/env python2.6
 from __future__ import division
 
-import Image as im
+import PIL.Image as im
 
 '''This program generates patterns for the Bemis100 lighting system. A pattern
 is derived from an image file, which will be played back one row at a time on
