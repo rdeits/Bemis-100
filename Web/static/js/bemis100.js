@@ -115,7 +115,8 @@ function patternHTML(pat) {
     if (!pat.is_folder) {
       qh = '<li><img src="/static/patterns/' + p + '">' + '</li>';
     } else {
-      qh = '<li><div class="mix-queue-item"><span>Shuffle: ' + p + '</span></div></li>';
+      qh = '<li><img src="/static/build/thumbs/' + p + '/_mix.png">' + '</li>';
+      // qh = '<li><div class="mix-queue-item"><span>Shuffle: ' + p + '</span></div></li>';
     }
     return qh;
   }

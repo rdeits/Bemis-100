@@ -1,7 +1,7 @@
 import os
 import re
 
-PATTERN_RE = '^[^\.]+\.(gif|png|jpg|jpeg|tiff|bmp)$'
+PATTERN_RE = '^[^\._][^\.]+\.(gif|png|jpg|jpeg|tiff|bmp)$'
 
 def find_patterns(d):
     patterns = []
