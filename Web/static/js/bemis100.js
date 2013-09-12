@@ -3,7 +3,7 @@ $(document).ready(function() {
   updateWriters();
   updateQueue();
 
-  $('#play_controls a').click(function(evt) {
+  $('#play_pause').click(function(evt) {
     evt.preventDefault();
 
     if ($(evt.target).hasClass('pause')) {
@@ -23,12 +23,14 @@ $(document).ready(function() {
       $(evt.target).addClass('pause');
       $(evt.target).html('Pause');
     updateQueue();
-
-    } else if ($(evt.target).hasClass('next')) {
-      $.getJSON('/next', function(result) {
-        updateQueue();
-      });
     }
+  });
+
+  $('.next-button').click(function(evt) {
+    evt.preventDefault();
+    $.getJSON('/next', function(result) {
+      updateQueue();
+    });
   });
 
   $('#add_writer').click(function(evt) {
@@ -41,7 +43,7 @@ $(document).ready(function() {
   });
 
 
-  $('.pattern-image').click(function(evt) {
+  $('.pattern-link').click(function(evt) {
     evt.preventDefault();
 
     var p = evt.target.getAttribute('data-pattern');

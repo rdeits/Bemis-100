@@ -65,9 +65,9 @@ def get_preview_path(pat):
 def show_pattern(p):
     s = '<a href="/play?pattern='+p+'">\n' + \
         '\t<div class="pattern-block"> ' + \
-        '\t<img class="pattern-image" data-pattern="'+p+'"' + \
+        '\t<img class="pattern-image pattern-link" data-pattern="'+p+'"' + \
         'src="'+os.path.join(config['pattern_dir'],p)+'">\n' + \
-        '\t<img class="pattern-preview" data-pattern="'+p+'"' + \
+        '\t<img class="pattern-preview pattern-link" data-pattern="'+p+'"' + \
         'src="'+ get_preview_path(p) +'">\n' + \
         '</div>\n' + \
         '</a>\n'
