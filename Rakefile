@@ -28,9 +28,13 @@ MIX_FOLDERS.each do |folder|
 	PREVIEWS.push(outFile)
 end
 
+file "Web/default_devices.py" do
+	cp "Web/default_devices.example.py" "Web/default_devices.py"
+end
+
 task :default => PREVIEWS
 
-task :serve => PREVIEWS do
+task :serve => PREVIEWS + ["Web/default_devices.py"] do
 	Dir.chdir "Web"
 	sh "python ledweb.py"
 end
