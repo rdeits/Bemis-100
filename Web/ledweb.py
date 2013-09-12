@@ -201,6 +201,13 @@ if __name__ == '__main__':
                 ]
 
     application = tornado.web.Application(handlers=handlers, static_path='static')
+    for d in config['devices']:
+        writer_class = writer_types[d['type']]['class']
+        writer_params = writer_types[d['type']]['defaults']
+        path = d['path']
+        new_writer = writer_class(path, **writer_params)
+        print "Adding writer", new_writer
+        controller.add_writer(new_writer)
 
     try:
         # server = tornadio2.SocketServer(application)
