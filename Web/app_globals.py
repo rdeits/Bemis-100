@@ -1,11 +1,13 @@
 from led.ledctl import LEDController
 from led.ge import GEWriter
 from led.bemis100 import Bemis100Writer
+from default_devices import DEVICES
 
 config = {'pattern_dir': 'static/build/thumbs',
           'build_dir': 'static/build',
           'framerate': 30,
-          'num_lights': 50}
+          'num_lights': 50,
+          'devices': DEVICES}
 
 controller = LEDController(framerate=config['framerate'])
 
