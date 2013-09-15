@@ -1,0 +1,48 @@
+.pattern-thumb {
+	width:150px;
+	height:150px;
+}
+
+.pattern-preview {
+	width:150px;
+	height:10px;
+	clear:left;
+	margin-top:3px
+}
+
+.pattern-block {
+	margin: 5px;
+	float:left;
+	background: #202020;
+	width: 150px;
+}
+
+.pattern-group {
+	background: #414141;
+	/*float:left;*/
+	width:100%;
+	overflow: hidden;
+}
+
+.all-patterns {
+	width:100%;
+}
+
+.queue {
+	background: #616161;
+	/*overflow: auto;*/
+	margin-right: -30000px;
+}
+
+.queue-holder {
+	overflow: auto;
+}
+
+.current {
+	float:left;
+}
+
+.container {
+	width: 700px;
+
+}

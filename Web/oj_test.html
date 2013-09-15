@@ -1,0 +1,61 @@
+<html>
+	<head>
+		<title>Bemis100</title>
+		<script src="static/js/jquery-2.0.3.min.js" type="text/javascript"></script>
+		<script src="static/js/oj.js" type="text/javascript"></script>
+		<link href="oj_test.css" rel='stylesheet' type='text/css'>
+	</head>
+	<body>
+	</body>
+	<script>
+		$('body').oj(function () {
+			oj.h1('Bemis100');
+			function show_pattern(pat) {
+				oj.div(function () {
+					oj.div(function () {
+						oj.img({src:pat.thumb, class:'pattern-thumb'});
+					});
+					oj.div(function () {
+						oj.img({src:pat.preview, class:'pattern-preview'});
+					});
+				}, {'class':'pattern-block'});
+			};
+			function show_group(grp) {
+				oj.div(function () {
+					oj.h2(grp.name);
+					for (var i = 0; i < grp.patterns.length; i++) {
+						show_pattern(grp.patterns[i]);
+					};
+				}, {'class':'pattern-group'});
+			};
+			function show_queue(queue) {
+				for (var i=0; i< queue.length; i++) {
+					show_pattern(queue[i]);
+				};
+			};
+			var pat = {thumb: 'static/build/thumbs/Cold/ice_3600.png', preview: 'static/build/previews/Cold/ice_3600.gif'};
+			var pattern_groups = [{'name':'Cold','patterns':[pat, pat]},{'name':'Warm','patterns':[pat, pat]}];
+			var queue = [pat, pat, pat, pat, pat, pat];
+			var current = pat;
+			oj.div(function() {
+				oj.div(function() {
+					show_pattern(current);
+					}, {'class': 'current'}
+				);
+				oj.div(function() {
+					oj.div(function () {
+						show_queue(queue);
+						}, {'class':'queue'}
+					);
+				  }, {'class':'queue-holder'}
+				);
+				oj.div(function() {
+					for (var i = 0; i < pattern_groups.length; i++) {
+						show_group(pattern_groups[i]);
+					};}, {'class':'all-patterns'}
+				);},
+				{'class': 'container'}
+			);
+		});
+	</script>
+</html>
