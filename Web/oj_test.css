@@ -1,3 +1,31 @@
+.header {
+	overflow:auto;
+	width:100%;
+}
+
+.title {
+	font-size: 3em;
+	float: left;
+}
+
+.play-controls {
+	clear:left;
+	overflow: auto;
+}
+
+.control-btn {
+	float:right;
+	border: 1px solid black;
+	margin-bottom: 5px;
+	margin-right: 10px;
+	margin-left: 10px;
+	margin-top: 0px;
+	padding-bottom: 5px;
+	padding-left: 10px;
+	padding-right: 10px;
+	padding-top: 5px;
+}
+
 .pattern-thumb {
 	width:150px;
 	height:150px;
@@ -15,17 +43,19 @@
 	float:left;
 	background: #202020;
 	width: 150px;
+	/*border: 1px solid black;*/
 }
 
 .pattern-group {
-	background: #414141;
-	/*float:left;*/
-	width:100%;
-	overflow: hidden;
+	/*background: #414141;*/
+	border: 1px solid black;
+	overflow: auto;
+	margin: 10px;
+	padding: 5px;
 }
 
 .all-patterns {
-	width:100%;
+	border: 1px solid black;
 }
 
 .queue {
@@ -36,13 +66,31 @@
 
 .queue-holder {
 	overflow: auto;
+	margin: 10px;
+	border: 1px solid black;
 }
 
 .current {
+	border: 1px solid black;
+	margin: 10px;
+	overflow: auto;
+}
+
+.current-holder {
 	float:left;
 }
 
-.container {
-	width: 700px;
+.current-and-queue {
+	border: 1px solid black;
+}
 
+.container {
+	overflow: auto;
+	max-width: 1000px;
+}
+
+.text-label {
+	font-size: large;
+	font-family: sans-serif;
+	margin: 10px;
 }

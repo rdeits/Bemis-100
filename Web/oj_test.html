@@ -9,52 +9,64 @@
 	</body>
 	<script>
 		$('body').oj(function () {
-			oj.h1('Bemis100');
 			function show_pattern(pat) {
-				oj.div(function () {
+				oj.div({c:'pattern-block',click:function(evt){console.log(evt)},name:pat.name}, function () {
 					oj.div(function () {
 						oj.img({src:pat.thumb, class:'pattern-thumb'});
 					});
 					oj.div(function () {
 						oj.img({src:pat.preview, class:'pattern-preview'});
 					});
-				}, {'class':'pattern-block'});
+				});
 			};
 			function show_group(grp) {
-				oj.div(function () {
-					oj.h2(grp.name);
+				oj.div({c:'pattern-group'}, function () {
+					oj.h2(grp.name,{c:'text-label'});
 					for (var i = 0; i < grp.patterns.length; i++) {
 						show_pattern(grp.patterns[i]);
 					};
-				}, {'class':'pattern-group'});
+				});
 			};
 			function show_queue(queue) {
 				for (var i=0; i< queue.length; i++) {
 					show_pattern(queue[i]);
 				};
 			};
-			var pat = {thumb: 'static/build/thumbs/Cold/ice_3600.png', preview: 'static/build/previews/Cold/ice_3600.gif'};
+			var pat = {thumb: 'static/build/thumbs/Cold/ice_3600.png', preview: 'static/build/previews/Cold/ice_3600.gif', name:'Cold/ice_3600.png'};
 			var pattern_groups = [{'name':'Cold','patterns':[pat, pat]},{'name':'Warm','patterns':[pat, pat]}];
 			var queue = [pat, pat, pat, pat, pat, pat];
 			var current = pat;
-			oj.div(function() {
-				oj.div(function() {
-					show_pattern(current);
-					}, {'class': 'current'}
-				);
-				oj.div(function() {
-					oj.div(function () {
-						show_queue(queue);
-						}, {'class':'queue'}
-					);
-				  }, {'class':'queue-holder'}
-				);
-				oj.div(function() {
+			oj.div({c: 'container'}, function() {
+				oj.div({c: 'header'}, function() {
+					oj.span({c: 'title'}, 'Bemis100');
+				});
+				oj.div({c: 'play-controls'}, function() {
+					oj.span({c: 'control-btn'}, 'Next');
+					oj.span({c: 'control-btn'}, 'Play/Pause');
+				});
+				oj.div({c: 'current-and-queue'}, function() {
+					oj.div({c: 'current-holder'}, function () {
+						oj.span('Now Playing:', {c:'text-label'}, {style:{margin:'10px'}});
+						oj.div({c: 'current'}, function() {
+							show_pattern(current);
+							}
+						);
+					});
+					oj.div(function() {
+						oj.span('Queue:', {c:'text-label'});
+						oj.div({c:'queue-holder'}, function() {
+							oj.div({c:'queue'}, function () {
+								show_queue(queue);
+							});
+					  });
+					});
+				});
+				oj.div({c:'all-patterns'}, function() {
+					oj.span('All Patterns', {c:'text-label'});
 					for (var i = 0; i < pattern_groups.length; i++) {
 						show_group(pattern_groups[i]);
-					};}, {'class':'all-patterns'}
-				);},
-				{'class': 'container'}
+					};}
+				);}
 			);
 		});
 	</script>
