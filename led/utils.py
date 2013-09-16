@@ -13,10 +13,14 @@ def find_patterns(d):
         p = []
         for f in files:
             if re.match(PATTERN_RE, f, re.I):
-                p.append(os.path.join(disp_root, f))
-        patterns.append((disp_root, p))
+                name = os.path.join(disp_root, f)
+                thumb = os.path.join(d, name)
+                preview = os.path.join(d.replace('thumbs', 'previews'), re.sub('\.[^\.]*$','.gif',name))
+                p.append({'name':name,'preview':preview,'thumb':thumb})
+        patterns.append({'name':disp_root, 'patterns':p})
 
-    patterns[:1] = patterns[0][1]    # Don't return relpath for root dir
+    # patterns[:1] = patterns[0][1]    # Don't return relpath for root dir
+    patterns = patterns[1:]
     return patterns
 
 def find_patterns_flat(d):

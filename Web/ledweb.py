@@ -46,39 +46,54 @@ else:
     def list_com_ports():
         return sorted([i[0] for i in comports()],key=lambda x: 'usbmodem' in x, reverse=True)
 
-def show_patterns(patterns):
-    s = ''
-    for e in patterns:
-        if type(e) is tuple:
-            s += '<div class="pattern_folder">' + \
-                 '<h3>' + e[0] + \
-                 '&rarr;  <span class="shuffle"><a folder="' + e[0] + '" href="/play?folder=' + e[0] + '">Shuffle</a></span></h3>' + \
-                 show_patterns(e[1]) + \
-                 '</div>'
-        else:
-            s += show_pattern(e)
-    return s
 
 def get_preview_path(pat):
     return os.path.join(config['build_dir'], 'previews', re.sub(r'\.[^.]*$', '.gif', pat))
 
-def show_pattern(p):
-    s = '<a href="/play?pattern='+p+'">\n' + \
-        '\t<div class="pattern-block"> ' + \
-        '\t<img class="pattern-image pattern-link" data-pattern="'+p+'"' + \
-        'src="'+os.path.join(config['pattern_dir'],p)+'">\n' + \
-        '\t<img class="pattern-preview pattern-link" data-pattern="'+p+'"' + \
-        'src="'+ get_preview_path(p) +'">\n' + \
-        '</div>\n' + \
-        '</a>\n'
-    return s
+def get_thumb_path(pat):
+    return os.path.join(config['build_dir'], 'thumbs', pat)
+
+def view_format(pat):
+    return {'name': pat,
+            'preview': get_preview_path(pat),
+            'thumb': get_thumb_path(pat)}
 
 class Home(tornado.web.RequestHandler):
     def get(self):
-        patterns = find_patterns(config['pattern_dir'])
+        self.render("oj_test.html", title="Bemis100")
 
-        patterns_html = show_patterns(patterns)
-        self.render("layout.html", title="Bemis100", patterns_html=patterns_html)
+class PatternGroups(tornado.web.RequestHandler):
+    def get(self):
+        patterns = find_patterns(config['pattern_dir'])
+        self.write(json.dumps({'pattern_groups':patterns}))
+
+class Status(tornado.web.RequestHandler):
+    def get(self):
+        status = {}
+        if controller.current is None:
+            status['current'] = None
+        else:
+            status['current'] = view_format(controller.current.name)
+
+        status['queue'] = []
+        for p in controller.queue:
+            status['queue'].append(view_format(p.name))
+
+        status['playing'] = controller.is_playing()
+        self.write(json.dumps({'controller_status': status}))
+        # self.write(json.dumps(dict(queue=[], current=dict(name='',reps=0,id=-1,is_folder=False))))
+        # else:
+        #     self.write(json.dumps(dict(
+        #                queue=[dict(name=p.name,
+        #                            reps=p.reps,
+        #                            id=p.id,
+        #                            is_folder=isinstance(p.pattern, MixPattern))
+        #                       for p in controller.queue],
+        #                current=dict(name=controller.current.name,
+        #                             reps=controller.current.reps,
+        #                             id=controller.current.id,
+        #                             is_folder=isinstance(controller.current.pattern, MixPattern)))))
+
 
 class AddPattern(tornado.web.RequestHandler):
     def get(self):
@@ -86,7 +101,7 @@ class AddPattern(tornado.web.RequestHandler):
         if 'pattern' in params or 'beatpattern' in params \
                 or 'grapheqpattern' in params or 'folder' in params:
             p = None
-            track_beat = 'beat' in params
+            track_beat = params['beat'][0] == 'true'
             graph_eq = 'grapheq' in params
             if 'pattern' in params:
                 pattern_name = params['pattern'][0]
@@ -121,29 +136,6 @@ class AddPattern(tornado.web.RequestHandler):
             else:
                 print "Invalid pattern name:", pattern_name
         self.write(json.dumps(dict(success=True)))
-
-
-class Queue(tornado.web.RequestHandler):
-
-    def get(self):
-        if controller.current is None:
-            self.write(json.dumps(dict(queue=[], current=dict(name='',reps=0,id=-1,is_folder=False))))
-        else:
-            self.write(json.dumps(dict(
-                       queue=[dict(name=p.name,
-                                   reps=p.reps,
-                                   id=p.id,
-                                   is_folder=isinstance(p.pattern, MixPattern))
-                              for p in controller.queue],
-                       current=dict(name=controller.current.name,
-                                    reps=controller.current.reps,
-                                    id=controller.current.id,
-                                    is_folder=isinstance(controller.current.pattern, MixPattern)))))
-
-
-class Status(tornado.web.RequestHandler):
-    def get(self):
-        self.write(json.dumps(dict(status=controller.status())))
 
 class Pause(tornado.web.RequestHandler):
     def get(self):
@@ -191,12 +183,13 @@ if __name__ == '__main__':
     handlers = [(r'/', Home),
                 (r'/play', Play),
                 (r'/add', AddPattern),
-                (r'/queue', Queue),
                 (r'/pause', Pause),
                 (r'/next', Next),
                 (r'/add_writer', AddWriter),
                 (r'/device_list', DeviceList),
-                (r'/get_writers', GetWriters)
+                (r'/get_writers', GetWriters),
+                (r'/pattern_groups',PatternGroups),
+                (r'/status',Status)
                 # (r'/upload', Upload)
                 ]
 

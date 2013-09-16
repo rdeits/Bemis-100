@@ -3,71 +3,120 @@
 		<title>Bemis100</title>
 		<script src="static/js/jquery-2.0.3.min.js" type="text/javascript"></script>
 		<script src="static/js/oj.js" type="text/javascript"></script>
-		<link href="oj_test.css" rel='stylesheet' type='text/css'>
+		<link href="static/stylesheets/bemis100_oj.css" rel='stylesheet' type='text/css'>
 	</head>
 	<body>
 	</body>
 	<script>
-		$('body').oj(function () {
-			function show_pattern(pat) {
-				oj.div({c:'pattern-block',click:function(evt){console.log(evt)},name:pat.name}, function () {
-					oj.div(function () {
-						oj.img({src:pat.thumb, class:'pattern-thumb'});
-					});
-					oj.div(function () {
-						oj.img({src:pat.preview, class:'pattern-preview'});
-					});
+		function on_add_pattern(evt) {
+			var params = {pattern: evt.currentTarget.attributes.name.nodeValue, beat: false};
+			$.getJSON('/add', params, function(result) {
+				update_view();
+			});
+		}
+		function show_pattern_button(pat) {
+			oj.div({c:'pattern-block pointer',
+				      click:on_add_pattern,
+				      name:pat.name}, function () {
+				oj.div(function () {
+					oj.img({src:pat.thumb, class:'pattern-thumb'});
 				});
-			};
-			function show_group(grp) {
-				oj.div({c:'pattern-group'}, function () {
-					oj.h2(grp.name,{c:'text-label'});
-					for (var i = 0; i < grp.patterns.length; i++) {
-						show_pattern(grp.patterns[i]);
-					};
+				oj.div(function () {
+					oj.img({src:pat.preview, class:'pattern-preview'});
 				});
-			};
-			function show_queue(queue) {
+			});
+		};
+		function show_pattern(pat) {
+			oj.div({c:'pattern-block'}, function() {
+				oj.div(function () {
+					oj.img({src:pat.thumb, class:'pattern-thumb'});
+				});
+			});
+		};
+		function show_group(grp) {
+			oj.div({c:'pattern-group'}, function () {
+				oj.h2(grp.name,{c:'text-label'});
+				for (var i = 0; i < grp.patterns.length; i++) {
+					show_pattern_button(grp.patterns[i]);
+				};
+			});
+		};
+		function show_queue(queue) {
+			if (queue.length > 0) {
 				for (var i=0; i< queue.length; i++) {
 					show_pattern(queue[i]);
 				};
-			};
-			var pat = {thumb: 'static/build/thumbs/Cold/ice_3600.png', preview: 'static/build/previews/Cold/ice_3600.gif', name:'Cold/ice_3600.png'};
-			var pattern_groups = [{'name':'Cold','patterns':[pat, pat]},{'name':'Warm','patterns':[pat, pat]}];
-			var queue = [pat, pat, pat, pat, pat, pat];
-			var current = pat;
+			} else {
+				oj.div({c: 'pattern-block'}, function() {
+					oj.div({c:'queue-placeholder pattern-block'}, function(){
+						oj.span('No patterns in queue');
+					});
+				});
+			}
+		};
+		function show_current(current) {
+			if (current===null) {
+				oj.div({c:'queue-placeholder pattern-block'}, function() {
+					oj.span('Nothing playing');
+				});
+			} else {
+				show_pattern(current);
+			}
+		};
+		function update_view() {
+			$.getJSON('/status', function(result) {
+				controller_status = result['controller_status'];
+				console.log(controller_status);
+				$('.queue').oj(function() {show_queue(controller_status.queue)});
+				$('.current').oj(function() {show_current(controller_status.current)});
+				if (controller_status.playing) {
+					$('.play-btn').css({display:'none'});
+					$('.pause-btn').css({display:'inline'});
+				} else {
+					$('.play-btn').css({display:'inline'});
+					$('.pause-btn').css({display:'none'});
+				}
+			});
+			setTimeout(update_view, 2000);
+		};
+		function update_patterns(pattern_groups) {
+			$.getJSON('/pattern_groups', function(result) {
+				pattern_groups = result['pattern_groups'];
+				$('.all-patterns').oj(function () {
+					oj.span('All Patterns', {c:'text-label'});
+					for (var i = 0; i < pattern_groups.length; i++) {
+						console.log(pattern_groups[i]);
+						show_group(pattern_groups[i]);
+					}
+				});
+			});
+		}
+	$('body').oj(function () {
 			oj.div({c: 'container'}, function() {
 				oj.div({c: 'header'}, function() {
 					oj.span({c: 'title'}, 'Bemis100');
 				});
 				oj.div({c: 'play-controls'}, function() {
 					oj.span({c: 'control-btn'}, 'Next');
-					oj.span({c: 'control-btn'}, 'Play/Pause');
+					oj.span({c: 'control-btn play-btn'}, 'Play');
+					oj.span({c: 'control-btn pause-btn'}, 'Pause');
 				});
 				oj.div({c: 'current-and-queue'}, function() {
 					oj.div({c: 'current-holder'}, function () {
-						oj.span('Now Playing:', {c:'text-label'}, {style:{margin:'10px'}});
-						oj.div({c: 'current'}, function() {
-							show_pattern(current);
-							}
-						);
+						oj.span('Now Playing:', {c:'text-label'});
+						oj.div({c: 'current'});
 					});
 					oj.div(function() {
 						oj.span('Queue:', {c:'text-label'});
 						oj.div({c:'queue-holder'}, function() {
-							oj.div({c:'queue'}, function () {
-								show_queue(queue);
-							});
+							oj.div({c:'queue'});
 					  });
 					});
 				});
-				oj.div({c:'all-patterns'}, function() {
-					oj.span('All Patterns', {c:'text-label'});
-					for (var i = 0; i < pattern_groups.length; i++) {
-						show_group(pattern_groups[i]);
-					};}
-				);}
-			);
+				oj.div({c:'all-patterns'});
+			});
 		});
+		update_patterns();
+		update_view();
 	</script>
 </html>

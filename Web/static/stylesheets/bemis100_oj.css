@@ -1,3 +1,8 @@
+body {
+	color: white;
+	background: black;
+}
+
 .header {
 	overflow:auto;
 	width:100%;
@@ -15,7 +20,7 @@
 
 .control-btn {
 	float:right;
-	border: 1px solid black;
+	border: 1px solid white;
 	margin-bottom: 5px;
 	margin-right: 10px;
 	margin-left: 10px;
@@ -43,19 +48,19 @@
 	float:left;
 	background: #202020;
 	width: 150px;
-	/*border: 1px solid black;*/
+	/*border: 1px solid white;*/
 }
 
 .pattern-group {
 	/*background: #414141;*/
-	border: 1px solid black;
+	border: 1px solid white;
 	overflow: auto;
 	margin: 10px;
 	padding: 5px;
 }
 
 .all-patterns {
-	border: 1px solid black;
+	border: 1px solid white;
 }
 
 .queue {
@@ -67,11 +72,15 @@
 .queue-holder {
 	overflow: auto;
 	margin: 10px;
-	border: 1px solid black;
+	border: 1px solid white;
+}
+
+.queue-placeholder {
+	height: 150px;
 }
 
 .current {
-	border: 1px solid black;
+	border: 1px solid white;
 	margin: 10px;
 	overflow: auto;
 }
@@ -81,7 +90,8 @@
 }
 
 .current-and-queue {
-	border: 1px solid black;
+	border: 1px solid white;
+	overflow: auto;
 }
 
 .container {
@@ -93,4 +103,8 @@
 	font-size: large;
 	font-family: sans-serif;
 	margin: 10px;
+}
+
+.pointer {
+	cursor: pointer;
 }
