@@ -4,7 +4,6 @@ import threading
 import os
 import re
 import json
-import platform
 
 import sys
 sys.path.append('..')
@@ -18,33 +17,6 @@ from led.ge import GEWriter
 from led.mix import MixPattern
 from led.bemis100 import Bemis100Writer
 from led.utils import find_patterns
-
-if platform.system() == "Windows":
-    import _winreg as winreg
-    import itertools
-
-    def list_com_ports():
-        """ Uses the Win32 registry to return an
-            iterator of serial (COM) ports
-            existing on this computer.
-        """
-        path = 'HARDWARE\\DEVICEMAP\\SERIALCOMM'
-        try:
-            key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, path)
-        except WindowsError:
-            raise IterationError
-
-        for i in itertools.count():
-            try:
-                val = winreg.EnumValue(key, i)
-                yield str(val[1])
-            except EnvironmentError:
-                break
-else:
-    from serial.tools.list_ports import comports
-
-    def list_com_ports():
-        return sorted([i[0] for i in comports()],key=lambda x: 'usbmodem' in x, reverse=True)
 
 
 def get_preview_path(pat):
@@ -176,12 +148,8 @@ if __name__ == '__main__':
                 (r'/add', AddPattern),
                 (r'/pause', Pause),
                 (r'/next', Next),
-                (r'/add_writer', AddWriter),
-                (r'/device_list', DeviceList),
-                (r'/get_writers', GetWriters),
                 (r'/pattern_groups',PatternGroups),
                 (r'/status',Status)
-                # (r'/upload', Upload)
                 ]
 
     application = tornado.web.Application(handlers=handlers, static_path='static')
@@ -194,7 +162,6 @@ if __name__ == '__main__':
         controller.add_writer(new_writer)
 
     try:
-        # server = tornadio2.SocketServer(application)
         application.listen(5000)
         tornado.ioloop.IOLoop.instance().start()
     except KeyboardInterrupt:
