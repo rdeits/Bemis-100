@@ -25,7 +25,7 @@ def get_preview_path(pat):
 def get_thumb_path(pat):
     return os.path.join(config['build_dir'], 'thumbs', pat)
 
-def view_format(pat):
+def format_for_viewer(pat):
     return {'name': pat,
             'preview': get_preview_path(pat),
             'thumb': get_thumb_path(pat)}
@@ -45,14 +45,14 @@ class Status(tornado.web.RequestHandler):
         if controller.current is None:
             status['current'] = None
         else:
-            status['current'] = view_format(controller.current.name)
+            status['current'] = format_for_viewer(controller.current.name)
 
         status['queue'] = []
         for p in controller.queue:
             if isinstance(p, MixPattern):
-                status['queue'].append(view_format(re.sub(r'\/[^\/]*', '/_mix.png', p.name)))
+                status['queue'].append(format_for_viewer(re.sub(r'\/[^\/]*', '/_mix.png', p.name)))
             else:
-                status['queue'].append(view_format(p.name))
+                status['queue'].append(format_for_viewer(p.name))
 
         status['playing'] = controller.is_playing()
         self.write(json.dumps({'controller_status': status}))
