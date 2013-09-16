@@ -77,22 +77,13 @@ class Status(tornado.web.RequestHandler):
 
         status['queue'] = []
         for p in controller.queue:
-            status['queue'].append(view_format(p.name))
+            if isinstance(p, MixPattern):
+                status['queue'].append(view_format(re.sub(r'\/[^\/]*', '/_mix.png', p.name)))
+            else:
+                status['queue'].append(view_format(p.name))
 
         status['playing'] = controller.is_playing()
         self.write(json.dumps({'controller_status': status}))
-        # self.write(json.dumps(dict(queue=[], current=dict(name='',reps=0,id=-1,is_folder=False))))
-        # else:
-        #     self.write(json.dumps(dict(
-        #                queue=[dict(name=p.name,
-        #                            reps=p.reps,
-        #                            id=p.id,
-        #                            is_folder=isinstance(p.pattern, MixPattern))
-        #                       for p in controller.queue],
-        #                current=dict(name=controller.current.name,
-        #                             reps=controller.current.reps,
-        #                             id=controller.current.id,
-        #                             is_folder=isinstance(controller.current.pattern, MixPattern)))))
 
 
 class AddPattern(tornado.web.RequestHandler):

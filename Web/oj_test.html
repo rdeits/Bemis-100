@@ -8,16 +8,26 @@
 	<body>
 	</body>
 	<script>
-		function on_add_pattern(evt) {
-			var params = {pattern: evt.currentTarget.attributes.name.nodeValue, beat: false};
+		function add_pattern(name) {
+			var params = {pattern: name, beat: false};
 			$.getJSON('/add', params, function(result) {
 				update_view();
 			});
 		}
+		function on_play(evt) {
+			$.getJSON('/play', function(result){});
+			update_view();
+		}
+		function on_pause(evt) {
+			$.getJSON('/pause', function(result){});
+			update_view();
+		}
+		function on_next (evt) {
+			$.getJSON('/next', function (result) {});
+			update_view();
+		}
 		function show_pattern_button(pat) {
-			oj.div({c:'pattern-block pointer',
-				      click:on_add_pattern,
-				      name:pat.name}, function () {
+			oj.div({c:'pattern-block pointer', click:function() {add_pattern(pat.name)}}, function () {
 				oj.div(function () {
 					oj.img({src:pat.thumb, class:'pattern-thumb'});
 				});
@@ -35,7 +45,11 @@
 		};
 		function show_group(grp) {
 			oj.div({c:'pattern-group'}, function () {
-				oj.h2(grp.name,{c:'text-label'});
+				oj.div({c:'pattern-group-header'}, function() {
+					oj.span(grp.name + ': ' ,{c:'text-label group-label'});
+					oj.a('Shuffle', {c:'text-label shuffle-btn', href:'#',click:function(evt) {add_pattern(grp.name+'/_mix.png')}});
+				});
+				// oj.h2(grp.name,{c:'text-label'});
 				for (var i = 0; i < grp.patterns.length; i++) {
 					show_pattern_button(grp.patterns[i]);
 				};
@@ -66,7 +80,6 @@
 		function update_view() {
 			$.getJSON('/status', function(result) {
 				controller_status = result['controller_status'];
-				console.log(controller_status);
 				$('.queue').oj(function() {show_queue(controller_status.queue)});
 				$('.current').oj(function() {show_current(controller_status.current)});
 				if (controller_status.playing) {
@@ -85,7 +98,6 @@
 				$('.all-patterns').oj(function () {
 					oj.span('All Patterns', {c:'text-label'});
 					for (var i = 0; i < pattern_groups.length; i++) {
-						console.log(pattern_groups[i]);
 						show_group(pattern_groups[i]);
 					}
 				});
@@ -97,9 +109,9 @@
 					oj.span({c: 'title'}, 'Bemis100');
 				});
 				oj.div({c: 'play-controls'}, function() {
-					oj.span({c: 'control-btn'}, 'Next');
-					oj.span({c: 'control-btn play-btn'}, 'Play');
-					oj.span({c: 'control-btn pause-btn'}, 'Pause');
+					oj.span({c: 'control-btn',click:on_next}, 'Next');
+					oj.span({c: 'control-btn play-btn', click:on_play}, 'Play');
+					oj.span({c: 'control-btn pause-btn',click:on_pause}, 'Pause');
 				});
 				oj.div({c: 'current-and-queue'}, function() {
 					oj.div({c: 'current-holder'}, function () {
