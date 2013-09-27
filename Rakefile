@@ -29,7 +29,7 @@ MIX_FOLDERS.each do |folder|
 end
 
 file "Web/default_devices.py" do
-	cp "Web/default_devices.example.py" "Web/default_devices.py"
+	cp "Web/default_devices.example.py","Web/default_devices.py"
 end
 
 task :default => PREVIEWS
