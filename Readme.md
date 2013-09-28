@@ -30,7 +30,7 @@ to reinstall Pillow.
 
 ##Usage
 
-Copy `Web/default_devices.example.py` to `Web/default_devices.py` and edit it to include the serial port for your lights.
+Copy `Web/default_devices.example.py` to `Web/default_devices.py` and replace the `'/dev/tty.usbmodemfa131'` with the name of your device's serial port. 
 
 To serve the web interface at `localhost:5000`:
 
