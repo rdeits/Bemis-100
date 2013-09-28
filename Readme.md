@@ -2,13 +2,20 @@
 Firmware, software and web interface for the 1E Bemis100 lighting system.
 
 ##Dependencies
-- Python 2.7
+apt-get packages shown in brackets
+
+- Python 2.7 [python2.7]
+- numpy [python-numpy]
+- pyaudio [python-pyaudio]
+- tornado [python-tornado]
+- imagemagick [imagemagick]
+- rake [rake]
+
+You'll also need these python modules, which can be installed with Pip:
+
 - Pillow
-- numpy
-- pyaudio
-- tornado
-- imagemagick
-- rake
+- pyserial
+
 
 ###Additional packages needed (on Ubuntu or similar)
 - libjpeg-dev
@@ -22,6 +29,9 @@ If you get an error about `decoder JPEG not available`, just make sure you've in
 to reinstall Pillow.
 
 ##Usage
+
+Copy `Web/default_devices.example.py` to `Web/default_devices.py` and edit it to include the serial port for your lights.
+
 To serve the web interface at `localhost:5000`:
 
 	rake serve
