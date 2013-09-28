@@ -2,14 +2,29 @@
 Firmware, software and web interface for the 1E Bemis100 lighting system.
 
 ##Dependencies
-- Python 2.6 (2.7 should work, 3.x won't)
-- PIL
+- Python 2.7
+- Pillow
 - numpy
 - pyaudio
 - tornado
-- TornadIO2 (use the development version from https://github.com/MrJoes/tornadio2)
+- imagemagick
+- rake
+
+###Additional packages needed (on Ubuntu or similar)
+- libjpeg-dev
+- python2.7-dev
+
+###Troubleshooting
+If you get an error about `decoder JPEG not available`, just make sure you've installed `libjpeg-dev` and then do
+
+	sudo pip install -I Pillow
+
+to reinstall Pillow.
 
 ##Usage
-Command line: `python run.py [-d device] [-f framerate] (pattern | pattern_dir) ...`
+To serve the web interface at `localhost:5000`:
 
-Web interface: `cd Web; python ledweb.py`
+	rake serve
+
+This will take a few minutes the first time it runs to build the thumbnails, mosaics, and animated GIF previews.
+
