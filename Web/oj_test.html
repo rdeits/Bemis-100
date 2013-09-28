@@ -93,8 +93,11 @@
 					$('.pause-btn').css({display:'none'});
 				}
 			});
-			setTimeout(update_view, 2000);
 		};
+		function run_timed_update() {
+			update_view();
+			setTimeout(run_timed_update, 2000);
+		}
 		function update_patterns(pattern_groups) {
 			$.getJSON('/pattern_groups', function(result) {
 				pattern_groups = result['pattern_groups'];
@@ -132,6 +135,6 @@
 			});
 		});
 		update_patterns();
-		update_view();
+		run_timed_update();
 	</script>
 </html>
