@@ -3,15 +3,14 @@ from __future__ import division
 import PIL.Image as Image
 import sys
 import os
+import tempfile
+import shutil
 
 def makePreview(inFile,outFile=None):
     '''Make an animated .gif preview of an image for the Bemis100'''
     if outFile is None:
         outFile = 'preview_'+inFile
-    tempFolder = inFile+'_temp'
-    if os.path.exists(tempFolder):
-        os.system('rm -r '+tempFolder)
-    os.mkdir(tempFolder)
+    tempFolder = tempfile.mkdtemp()
     im = Image.open(inFile)
     (width,height) = im.size
     for i in range(min(height,150)):
@@ -20,7 +19,7 @@ def makePreview(inFile,outFile=None):
     command ='convert '+'-delay 5 -loop 0 '+os.path.join(tempFolder,'*.gif')+' ' + outFile
     print(command)
     os.system(command)
-    os.system('rm -r '+tempFolder)
+    shutil.rmtree(tempFolder)
 
 if __name__=='__main__':
     inFile = sys.argv[1]
