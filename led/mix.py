@@ -1,6 +1,7 @@
 import sys
 import random
 import time
+import os
 
 sys.path.append('..')
 from led.pattern import Bemis100Pattern
@@ -8,9 +9,9 @@ from led.utils import find_patterns_flat
 
 class MixPattern:
     def __init__(self, folder, num_lights=50):
-        self.folder = folder
+        self.folder = os.path.split(folder)[0]
         self.num_lights = num_lights
-        self.pattern_paths = find_patterns_flat(folder)
+        self.pattern_paths = find_patterns_flat(self.folder)
         self.patterns = []
         self.build_patterns()
 

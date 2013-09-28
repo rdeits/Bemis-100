@@ -9,8 +9,12 @@
 	<body>
 	</body>
 	<script>
-		function add_pattern(name) {
-			var params = {pattern: name, beat: false};
+		function add_pattern(name, isfolder) {
+			if (isfolder) {
+				var params = {folder: name, beat: false};
+			} else {
+				var params = {pattern: name, beat: false};
+			}
 			$.getJSON('/add', params, function(result) {
 				update_view();
 			});
@@ -28,7 +32,7 @@
 			update_view();
 		}
 		function show_pattern_button(pat) {
-			oj.div({c:'pattern-block pointer', click:function() {add_pattern(pat.name)}}, function () {
+			oj.div({c:'pattern-block pointer', click:function() {add_pattern(pat.name, false)}}, function () {
 				oj.div(function () {
 					oj.img({src:pat.thumb, class:'pattern-thumb'});
 				});
@@ -48,7 +52,7 @@
 			oj.div({c:'pattern-group'}, function () {
 				oj.div({c:'pattern-group-header'}, function() {
 					oj.span(grp.name + ': ' ,{c:'text-label group-label'});
-					oj.a('Shuffle', {c:'text-label shuffle-btn', href:'#',click:function(evt) {add_pattern(grp.name+'/_mix.png')}});
+					oj.a('Shuffle', {c:'text-label shuffle-btn', href:'#',click:function(evt) {add_pattern(grp.name+'/_mix.png', true)}});
 				});
 				// oj.h2(grp.name,{c:'text-label'});
 				for (var i = 0; i < grp.patterns.length; i++) {
