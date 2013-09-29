@@ -199,7 +199,7 @@ void setup()
     //   xmas_set_color(i, brightness, xmas_color(initial_values[index][0], initial_values[index][1], initial_values[index][2]));
     // }
 
-    xmas_set_color(0, brightness, 15, 8, 0);
+    xmas_set_color(0, brightness, xmas_color(15, 8, 0));
 }  
  
    
