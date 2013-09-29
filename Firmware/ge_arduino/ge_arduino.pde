@@ -178,26 +178,28 @@ void setup()
     xmas_fill_color(0,XMAS_LIGHT_COUNT,XMAS_DEFAULT_INTENSITY,XMAS_COLOR_BLACK); //Enumerate all the lights
     Serial.begin(115200);
 
-    uint8_t i;
-    uint8_t j;
-    uint8_t initial_values[XMAS_LIGHT_COUNT][3];
-    for (i = 0; i < XMAS_LIGHT_COUNT; i++) {
-      // initial_values[i][0] = 15 - int(i * 15 / 50);
-      initial_values[i][0] = 15;
-      initial_values[i][1] = int((25 - abs(i - 25)) / 6);
-      // initial_values[i][1] = int(i * 5 / 50);
-      initial_values[i][2] = 0;
-    }
+    // uint8_t i;
+    // uint8_t j;
+    // uint8_t initial_values[XMAS_LIGHT_COUNT][3];
+    // for (i = 0; i < XMAS_LIGHT_COUNT; i++) {
+    //   // initial_values[i][0] = 15 - int(i * 15 / 50);
+    //   initial_values[i][0] = 15;
+    //   initial_values[i][1] = int((25 - abs(i - 25)) / 6);
+    //   // initial_values[i][1] = int(i * 5 / 50);
+    //   initial_values[i][2] = 0;
+    // }
 
 
     brightness = XMAS_DEFAULT_INTENSITY;
-    j = 0;
-    uint8_t index;
-    uint8_t k;
-    for(i = 0; i < XMAS_LIGHT_COUNT; i++) {
-      index = (i + j) % XMAS_LIGHT_COUNT;
-      xmas_set_color(i, brightness, xmas_color(initial_values[index][0], initial_values[index][1], initial_values[index][2]));
-    }
+    // j = 0;
+    // uint8_t index;
+    // uint8_t k;
+    // for(i = 0; i < XMAS_LIGHT_COUNT; i++) {
+    //   index = (i + j) % XMAS_LIGHT_COUNT;
+    //   xmas_set_color(i, brightness, xmas_color(initial_values[index][0], initial_values[index][1], initial_values[index][2]));
+    // }
+
+    xmas_set_color(0, brightness, 15, 8, 0);
 }  
  
    
