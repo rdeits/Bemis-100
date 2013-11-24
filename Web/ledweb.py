@@ -102,16 +102,19 @@ class AddPattern(tornado.web.RequestHandler):
 
 class Pause(tornado.web.RequestHandler):
     def get(self):
+        print "pause"
         controller.pause()
         self.write(json.dumps(dict(success=True)))
 
 class Play(tornado.web.RequestHandler):
     def get(self):
+        print "play"
         controller.play()
         self.write(json.dumps(dict(success=True)))
 
 class Next(tornado.web.RequestHandler):
     def get(self):
+        print "next"
         controller.next()
         self.write(json.dumps(dict(success=True)))
 
