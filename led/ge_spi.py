@@ -12,7 +12,7 @@ def encode_bit(bit):
 
 
 def bit_list(x, length):
-    return [int(c) for c in ('{:0' + str(length) + 'b}').format(x)[:length]]
+    return [int(c) for c in ('{:0' + str(length) + 'b}').format(int(x))[:length]]
 
 START = bytearray([0b00000111])
 END = bytearray([0b00000000, 0b00000000])
@@ -60,9 +60,6 @@ class GESPIWriter(ledctl.PatternWriter):
         wiringpi2.wiringPiSPIDataRW(self.port, s)
 
     def blank(self):
-        return
-        '''Turn off all the LEDs. We do this before startup to make sure the
-        power supplies are not loaded by the LEDs when they come online.'''
         for addr in range(self.num_lights):
             self.write_str(encode_bulb(addr, 127, 0, 0, 0))
 
