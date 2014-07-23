@@ -13,7 +13,6 @@ from led.beat import BeatPatternRMS, BeatPattern
 from led.graphEq import GraphEqPattern
 from led.wave import WavePattern
 from led.new_wave import NewWavePattern
-from led.ge import GEWriter
 from led.mix import MixPattern
 from led.bemis100 import Bemis100Writer
 from led.utils import find_patterns
@@ -22,22 +21,27 @@ from led.utils import find_patterns
 def get_preview_path(pat):
     return os.path.join(config['build_dir'], 'previews', re.sub(r'\.[^.]*$', '.gif', pat))
 
+
 def get_thumb_path(pat):
     return os.path.join(config['build_dir'], 'thumbs', pat)
+
 
 def format_for_viewer(pat):
     return {'name': pat,
             'preview': get_preview_path(pat),
             'thumb': get_thumb_path(pat)}
 
+
 class Home(tornado.web.RequestHandler):
     def get(self):
         self.render("oj_test.html", title="Bemis100")
 
+
 class PatternGroups(tornado.web.RequestHandler):
     def get(self):
         patterns = find_patterns(config['pattern_dir'])
-        self.write(json.dumps({'pattern_groups':patterns}))
+        self.write(json.dumps({'pattern_groups': patterns}))
+
 
 class Status(tornado.web.RequestHandler):
     def get(self):
