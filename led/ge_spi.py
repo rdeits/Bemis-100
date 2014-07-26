@@ -15,7 +15,7 @@ def bit_list(x, length):
     return [int(c) for c in ('{:0' + str(length) + 'b}').format(int(x))[:length]]
 
 START = bytearray([0b00000111])
-END = bytearray([0b00000000, 0b00000000, 0b00000000])
+END = bytearray([0b00000000, 0b00000000])
 
 
 def encode_bulb(addr, brightness, red, green, blue):
