@@ -6,7 +6,7 @@ import ledctl
 
 def encode_bit(bit):
     if bit:
-        return 0b00001111
+        return 0b00000111
     else:
         return 0b00111111
 
@@ -50,9 +50,10 @@ class GESPIWriter(ledctl.PatternWriter):
         self.blank()
 
     def draw_frame(self, frame):
-        
+        #print "frame"
         for i in range(0, len(frame), 3):
-            if self.last_frame is None or any(frame[i+j] != self.last_frame[i+j] for j in range(3)):
+            # if self.last_frame is None or any(frame[i+j] != self.last_frame[i+j] for j in range(3)):
+            if True:
                 addr = i//3
                 red = int(frame[i] * 15/255)
                 green = int(frame[i+1] * 15/255)
