@@ -64,8 +64,8 @@ class GESPIWriter(ledctl.PatternWriter):
     def draw_frame(self, frame):
         #print "frame"
         for i in range(0, len(frame), 3):
-            # if self.last_frame is None or any(frame[i+j] != self.last_frame[i+j] for j in range(3)):
-            if True:
+            if self.last_frame is None or any(frame[i+j] != self.last_frame[i+j] for j in range(3)):
+            # if True:
                 addr = i//3
                 red = int(frame[i] * 15/255)
                 green = int(frame[i+1] * 15/255)
