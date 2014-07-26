@@ -2,6 +2,7 @@ from __future__ import division
 
 import wiringpi2
 import ledctl
+import os
 
 
 def encode_bits(bits):
@@ -50,12 +51,12 @@ class GESPIWriter(ledctl.PatternWriter):
 
         self.device = device
         self.port = None
+        self.spi_name = 1
         self.num_lights = num_lights
         self.last_frame = None
 
     def open_port(self):
-        self.port = 1
-        wiringpi2.wiringPiSPISetup(self.port, 125000)
+        self.port = wiringpi2.wiringPiSPISetup(self.spi_name, 125000)
         self.blank()
 
     def close_port(self):
@@ -75,7 +76,8 @@ class GESPIWriter(ledctl.PatternWriter):
         self.last_frame = frame
 
     def write_str(self, s):
-        wiringpi2.wiringPiSPIDataRW(self.port, s)
+        os.write(self.port, s)
+        # wiringpi2.wiringPiSPIDataRW(self.spi_name, s)
 
     def blank(self):
         for addr in range(self.num_lights):

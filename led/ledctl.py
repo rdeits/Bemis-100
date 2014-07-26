@@ -151,6 +151,7 @@ class LEDController(object):
                     return
 
                 self.draw_frame(frame)
+                # print "drawing frame from pattern:", pattern.filename
 
                 dt = time.time() - row_start
                 if dt < self.frame_dt:
