@@ -168,10 +168,12 @@ if __name__ == '__main__':
         print "Adding writer", new_writer
         controller.add_writer(new_writer)
 
-    pattern_path = os.path.join(config['pattern_dir'], 'Rainbows/rainbow166x1center.gif')
-    p = Bemis100Pattern(pattern_path, config['num_lights'])
-    controller.add_pattern(p, n, name=pattern_name)
-    controller.play()
+    # pattern_name = 'Rainbows/rainbow166x1.gif'
+    # pattern_path = os.path.join(config['pattern_dir'], pattern_name)
+    # p = Bemis100Pattern(pattern_path, config['num_lights'])
+    # n = -1
+    # controller.add_pattern(p, n, name=pattern_name)
+    # controller.play()
 
     try:
         application.listen(5000)

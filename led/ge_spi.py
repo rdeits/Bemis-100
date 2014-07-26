@@ -4,18 +4,30 @@ import wiringpi2
 import ledctl
 
 
-def encode_bit(bit):
-    if bit:
-        return 0b00000111
+def encode_bits(bits):
+    result = 0
+    if bits[0]:
+        result += 0b01000000
     else:
-        return 0b00111111
+        result += 0b11000000
+
+    if bits[1]:
+        result += 0b00001000
+    else:
+        result += 0b00011000
+
+    if bits[2]:
+        result += 0b00000001
+    else:
+        result += 0b00000011
+    return result
 
 
 def bit_list(x, length):
     return [int(c) for c in ('{:0' + str(length) + 'b}').format(int(x))[:length]]
 
-START = bytearray([0b00000111])
-END = bytearray([0b00000000, 0b00000000])
+START = bytearray([0b00000001])
+END = bytearray([0b00000000])
 
 
 def encode_bulb(addr, brightness, red, green, blue):
@@ -25,9 +37,9 @@ def encode_bulb(addr, brightness, red, green, blue):
     green = bit_list(green, 4)
     blue = bit_list(blue, 4)
 
-    s = str(START + bytearray([encode_bit(x) for x in
-            addr + brightness + blue + green + red]) + END)
-    assert(len(s) == 26 + len(START) + len(END))
+    word = addr + brightness + blue + green + red + [0]
+    s = str(START + bytearray([encode_bits(word[i:i+3]) for i in range(0,len(word),3)]) + END)
+    # assert(len(s) == 27 + len(START) + len(END))
     return s
 
 
@@ -43,7 +55,7 @@ class GESPIWriter(ledctl.PatternWriter):
 
     def open_port(self):
         self.port = 1
-        wiringpi2.wiringPiSPISetup(self.port, 250000)
+        wiringpi2.wiringPiSPISetup(self.port, 125000)
         self.blank()
 
     def close_port(self):
