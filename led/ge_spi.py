@@ -28,7 +28,7 @@ def bit_list(x, length):
     return [int(c) for c in ('{:0' + str(length) + 'b}').format(int(x))[:length]]
 
 START = bytearray([0b00000001])
-END = bytearray([0b00000000])
+END = bytearray([0b00000000,0b00000000])
 
 
 def encode_bulb(addr, brightness, red, green, blue):
@@ -64,6 +64,7 @@ class GESPIWriter(ledctl.PatternWriter):
 
     def draw_frame(self, frame):
         #print "frame"
+        commands = []
         for i in range(0, len(frame), 3):
             if self.last_frame is None or any(frame[i+j] != self.last_frame[i+j] for j in range(3)):
             # if True:
@@ -72,12 +73,14 @@ class GESPIWriter(ledctl.PatternWriter):
                 green = int(frame[i+1] * 15/255)
                 blue = int(frame[i+2] * 15/255)
                 #print addr, red, blue, green
-                self.write_str(encode_bulb(addr, 127, red, green, blue))
+                commands.append(encode_bulb(addr, 127, red, green, blue))
+                # self.write_str(encode_bulb(addr, 127, red, green, blue))
+        self.write_str(''.join(commands))
         self.last_frame = frame
 
     def write_str(self, s):
-        os.write(self.port, s)
-        # wiringpi2.wiringPiSPIDataRW(self.spi_name, s)
+        # os.write(self.port, s)
+        wiringpi2.wiringPiSPIDataRW(self.spi_name, s)
 
     def blank(self):
         for addr in range(self.num_lights):

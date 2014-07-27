@@ -13,7 +13,6 @@ IDCounter = count()
 
 class LEDController(object):
     def __init__(self, framerate=30):
-
         self.frame_dt = 1.0 / framerate
 
         self.queue = []
@@ -150,7 +149,9 @@ class LEDController(object):
                     self._next.clear()
                     return
 
+                print "before draw"
                 self.draw_frame(frame)
+                print "after draw"
                 # print "drawing frame from pattern:", pattern.filename
 
                 dt = time.time() - row_start
@@ -158,6 +159,7 @@ class LEDController(object):
                     time.sleep(self.frame_dt - dt)
                 # else:
                 #     print 'Draw slow by %f sec' % (dt-self.frame_dt)
+                print dt, time.time() - row_start, 1/(time.time() - row_start)
 
                 row_start = time.time()
 
