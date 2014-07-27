@@ -20,16 +20,27 @@
 			});
 		}
 		function on_play(evt) {
-			$.getJSON('/play', function(result){});
-			update_view();
+			$('.play-btn').css({display:'none'});
+			$('.pause-btn').css({display:'inline'});
+			$.getJSON('/play', function(result){update_view();});
 		}
 		function on_pause(evt) {
-			$.getJSON('/pause', function(result){});
-			update_view();
+			$('.pause-btn').css({display:'none'});
+			$('.play-btn').css({display:'inline'});
+			$.getJSON('/pause', function(result){update_view();});
+		}
+		function on_autoplay_on(evt) {
+			$('.autoplay-off-btn').css({display:'none'});
+			$('.autoplay-on-btn').css({display:'inline'});
+			$.getJSON('/autoplay_on', function(result){update_view();});
+		}
+		function on_autoplay_off(evt) {
+			$('.autoplay-off-btn').css({display:'inline'});
+			$('.autoplay-on-btn').css({display:'none'});
+			$.getJSON('/autoplay_off', function(result){update_view();});
 		}
 		function on_next (evt) {
-			$.getJSON('/next', function (result) {});
-			update_view();
+			$.getJSON('/next', function (result) {update_view();});
 		}
 		function show_pattern_button(pat) {
 			oj.div({c:'pattern-block pointer', click:function() {add_pattern(pat.name, false)}}, function () {
@@ -92,6 +103,14 @@
 					$('.play-btn').css({display:'inline'});
 					$('.pause-btn').css({display:'none'});
 				}
+				if (controller_status.autoplay) {
+					$('.autoplay-off-btn').css({display:'none'});
+					$('.autoplay-on-btn').css({display:'inline'});
+				} else {
+					$('.autoplay-off-btn').css({display:'inline'});
+					$('.autoplay-on-btn').css({display:'none'});
+				}
+				console.log(controller_status);
 			});
 		};
 		function run_timed_update() {
@@ -118,6 +137,8 @@
 					oj.span({c: 'control-btn',click:on_next}, 'Next');
 					oj.span({c: 'control-btn play-btn', click:on_play}, 'Play');
 					oj.span({c: 'control-btn pause-btn',click:on_pause}, 'Pause');
+					oj.span({c: 'control-btn autoplay-on-btn',click:on_autoplay_off}, 'Autoplay: On');
+					oj.span({c: 'control-btn autoplay-off-btn',click:on_autoplay_on}, 'Autoplay: Off');
 				});
 				oj.div({c: 'current-and-queue'}, function() {
 					oj.div({c: 'current-holder'}, function () {
@@ -135,6 +156,7 @@
 			});
 		});
 		update_patterns();
-		run_timed_update();
+		update_view();
+		// run_timed_update();
 	</script>
 </html>

@@ -59,6 +59,7 @@ class Status(tornado.web.RequestHandler):
                 status['queue'].append(format_for_viewer(p.name))
 
         status['playing'] = controller.is_playing()
+        status['autoplay'] = controller.autoplay
         self.write(json.dumps({'controller_status': status}))
 
 
@@ -116,6 +117,16 @@ class Play(tornado.web.RequestHandler):
         controller.play()
         self.write(json.dumps(dict(success=True)))
 
+class AutoplayOn(tornado.web.RequestHandler):
+    def get(self):
+        controller.autoplay = True
+        self.write(json.dumps(dict(success=True)))
+
+class AutoplayOff(tornado.web.RequestHandler):
+    def get(self):
+        controller.autoplay = False
+        self.write(json.dumps(dict(success=True)))
+
 class Next(tornado.web.RequestHandler):
     def get(self):
         print "next"
@@ -152,6 +163,8 @@ class DeviceList(tornado.web.RequestHandler):
 if __name__ == '__main__':
     handlers = [(r'/', Home),
                 (r'/play', Play),
+                (r'/autoplay_on', AutoplayOn),
+                (r'/autoplay_off', AutoplayOff),
                 (r'/add', AddPattern),
                 (r'/pause', Pause),
                 (r'/next', Next),

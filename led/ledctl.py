@@ -19,6 +19,7 @@ class LEDController(object):
         self.queue_has_data = threading.Event()
         self.queue_lock = threading.RLock()
         self.current = None
+        self._autoplay = True
 
         self.writers = []
         self.writer_count = 0
@@ -75,6 +76,8 @@ class LEDController(object):
         self.queue.append(QueueItem(name, pattern, num_times, IDCounter.next()))
         self.queue_has_data.set()
         self.queue_lock.release()
+        if self.autoplay:
+            self.play()
 
         if not async:
             self.wait_for_finish()
@@ -91,6 +94,16 @@ class LEDController(object):
     def next(self):
         self._next.set()
 
+    @property
+    def autoplay(self):
+        return self._autoplay
+    
+    @autoplay.setter
+    def autoplay(self, value):
+        self._autoplay = value
+        if self._autoplay:
+            self.play()
+
     def assert_writers_alive(self):
         for w in self.writers:
             if not w.is_alive():
@@ -98,7 +111,7 @@ class LEDController(object):
                 # raise SystemExit
 
     def wait_for_data(self):
-        while len(self.queue) == 0:
+        while len(self.queue) == 0 and self.current is None:
             self.queue_has_data.wait(0.1)
             self.assert_writers_alive();
 
@@ -120,9 +133,11 @@ class LEDController(object):
 
             self.queue_lock.acquire()
             self.current = self.queue.pop(0)
+            if len(self.queue) == 0:
+                self.queue_has_data.clear()
             self.queue_lock.release()
 
-            if self.current.pattern is not None:
+            if self.current is not None and self.current.pattern is not None:
                 self.draw_pattern(self.current.pattern, self.current.reps)
             else:
                 print "Controller exiting..."
@@ -145,13 +160,17 @@ class LEDController(object):
                 if not self._play.is_set():
                     self._play.wait()
 
+                if self.autoplay and self.queue_has_data.is_set():
+                    self._next.set()
+
                 if self._next.is_set():
+                    self.current = None
                     self._next.clear()
                     return
 
-                print "before draw"
+                # print "before draw"
                 self.draw_frame(frame)
-                print "after draw"
+                # print "after draw"
                 # print "drawing frame from pattern:", pattern.filename
 
                 dt = time.time() - row_start
@@ -159,7 +178,7 @@ class LEDController(object):
                     time.sleep(self.frame_dt - dt)
                 # else:
                 #     print 'Draw slow by %f sec' % (dt-self.frame_dt)
-                print dt, time.time() - row_start, 1/(time.time() - row_start)
+                # print dt, time.time() - row_start, 1/(time.time() - row_start)
 
                 row_start = time.time()
 
