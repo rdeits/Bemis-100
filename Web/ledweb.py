@@ -34,7 +34,7 @@ def format_for_viewer(pat):
 
 class Home(tornado.web.RequestHandler):
     def get(self):
-        self.render("oj_test.html", title="Bemis100")
+        self.render("home.html", title="Bemis100")
 
 
 class PatternGroups(tornado.web.RequestHandler):

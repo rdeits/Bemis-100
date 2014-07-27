@@ -1,1 +1,1 @@
-DEVICES = [{'type': 'ge', 'path': '/dev/tty.usbmodemfa131'}]
+DEVICES = [{'type': 'ge_spi', 'path': None}]
