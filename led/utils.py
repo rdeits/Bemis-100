@@ -21,11 +21,12 @@ def find_patterns(d):
         patterns.append({'name':disp_root, 'patterns':p})
 
     # patterns[:1] = patterns[0][1]    # Don't return relpath for root dir
-    patterns = patterns[1:]
+    # patterns = patterns[1:]
     return patterns
 
 def find_patterns_flat(d):
     patterns = []
+    print d
     for root, dirs, files in os.walk(d):
         for f in files:
             if re.match(PATTERN_RE, f, re.I):

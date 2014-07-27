@@ -17,23 +17,40 @@ a {
 	float: left;
 }
 
+.now-playing-label {
+	font-size: large;
+	font-family: sans-serif;
+	padding: 10px;
+	display: block;
+}
+
 .play-controls {
-	clear:left;
-	overflow: auto;
+	float:right;
+}
+
+.play-controls-inner {
+	width: 162px;
+	height: 162px;
+	margin: 11px;
 }
 
 .control-btn {
-	float:right;
+	float:left;
 	border: 1px solid white;
-	margin-bottom: 5px;
+	margin-bottom: 3px;
 	margin-right: 10px;
 	margin-left: 10px;
-	margin-top: 0px;
+	margin-top: 3px;
 	padding-bottom: 5px;
 	padding-left: 10px;
 	padding-right: 10px;
-	padding-top: 5px;
+	padding-top: 25px;
+	width: 120px;
+	height: 43px;
+	text-align: center;
 	cursor: pointer;
+	font-size: large;
+	font-family: sans-serif;
 }
 
 .pattern-thumb {

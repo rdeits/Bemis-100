@@ -1,5 +1,5 @@
 PATTERNS = FileList['Web/static/patterns/**/*.*']
-MIX_FOLDERS = FileList['Web/static/patterns/**/'][1..-1]
+MIX_FOLDERS = FileList['Web/static/patterns/**/']
 PREVIEWS = []
 
 PATTERNS.each do |pat|
@@ -21,7 +21,7 @@ end
 
 MIX_FOLDERS.each do |folder|
 	outFile = folder.sub(/^Web\/static\/patterns/, 'Web/static/build/thumbs') + '/_mix.png'
-	inFile = FileList[folder+'/*.*']
+	inFile = FileList[folder+'/*.*',folder+'/**/*.*']
 	file outFile do
 		sh "python Utilities/shuffle_thumb.py #{outFile} #{inFile}"
 	end

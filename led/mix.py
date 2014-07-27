@@ -12,13 +12,16 @@ class MixPattern:
     def __init__(self, folder, num_lights=50):
         self.folder = os.path.split(folder)[0]
         self.num_lights = num_lights
+        print "1"
         self.pattern_paths = find_patterns_flat(self.folder)
+        print "2"
         self.patterns = []
         self.build_patterns()
 
     def build_patterns(self):
         for p in self.pattern_paths:
             pat = Bemis100Pattern(p, self.num_lights)
+            print "created", pat
             self.patterns.append(pat)
 
     def __iter__(self):

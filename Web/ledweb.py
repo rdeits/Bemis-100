@@ -52,20 +52,21 @@ class Status(tornado.web.RequestHandler):
             status['current'] = format_for_viewer(controller.current.name)
 
         status['queue'] = []
-        for p in controller.queue:
-            if isinstance(p, MixPattern):
-                status['queue'].append(format_for_viewer(re.sub(r'\/[^\/]*', '/_mix.png', p.name)))
-            else:
-                status['queue'].append(format_for_viewer(p.name))
+        # for p in controller.queue:
+        #     if isinstance(p, MixPattern):
+        #         status['queue'].append(format_for_viewer(re.sub(r'\/[^\/]*', '/_mix.png', p.name)))
+        #     else:
+        #         status['queue'].append(format_for_viewer(p.name))
 
         status['playing'] = controller.is_playing()
-        status['autoplay'] = controller.autoplay
+        # status['autoplay'] = controller.autoplay
         self.write(json.dumps({'controller_status': status}))
 
 
 class AddPattern(tornado.web.RequestHandler):
     def get(self):
         params = self.request.arguments
+        print params
         if 'pattern' in params or 'beatpattern' in params \
                 or 'grapheqpattern' in params or 'folder' in params:
             p = None
@@ -84,7 +85,10 @@ class AddPattern(tornado.web.RequestHandler):
                         p = Bemis100Pattern(pattern_path, config['num_lights'])
             elif 'folder' in params:
                 folder = params['folder'][0]
+                folder = re.sub(r'^/*', '', folder)
                 pattern_path = os.path.join(config['pattern_dir'], folder)
+                print "folder", folder
+                print "pattern path", pattern_path
                 pattern_name = folder
                 p = MixPattern(pattern_path, config['num_lights'])
 
@@ -103,6 +107,7 @@ class AddPattern(tornado.web.RequestHandler):
                 print "Added pattern:", pattern_name
             else:
                 print "Invalid pattern name:", pattern_name
+        print "done"
         self.write(json.dumps(dict(success=True)))
 
 class Pause(tornado.web.RequestHandler):
@@ -181,12 +186,11 @@ if __name__ == '__main__':
         print "Adding writer", new_writer
         controller.add_writer(new_writer)
 
-    # pattern_name = 'Rainbows/rainbow166x1.gif'
-    # pattern_path = os.path.join(config['pattern_dir'], pattern_name)
-    # p = Bemis100Pattern(pattern_path, config['num_lights'])
-    # n = -1
-    # controller.add_pattern(p, n, name=pattern_name)
-    # controller.play()
+    pattern_name = '_off.png'
+    pattern_path = os.path.join(config['pattern_dir'], pattern_name)
+    p = Bemis100Pattern(pattern_path, config['num_lights'])
+    n = -1
+    controller.add_pattern(p, n, name=pattern_name)
 
     try:
         application.listen(5000)
