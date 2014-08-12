@@ -197,6 +197,8 @@ if __name__ == '__main__':
         tornado.ioloop.IOLoop.instance().start()
     except KeyboardInterrupt:
         print 'Exiting...'
+        # for c in controller.writers:
+        #     c.close_port()
         controller.quit()
         print 'controller exit'
         sys.exit()

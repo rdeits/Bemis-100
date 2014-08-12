@@ -20,9 +20,11 @@ class Bemis100Pattern:
         image = im.open(self.filename)
         (width,height)=image.size
 
-        if not target_width == 0:
-            image = image.resize((int(target_width), height), im.ANTIALIAS)
-            (width,height) = image.size
+        if target_width == 0:
+            target_width = width
+        target_height = 2 * height
+        image = image.resize((int(target_width), target_height), im.ANTIALIAS)
+        (width,height) = image.size
 
         image = image.convert('RGB')
 
