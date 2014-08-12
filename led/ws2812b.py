@@ -1,21 +1,8 @@
 from __future__ import division
 
-import wiringpi2
 import ledctl
-import os
-
-
-def encode_bit(bit):
-    if bit:
-        return 0b11111000
-    else:
-        return 0b11100000
-
-
-def bit_list(x, length=8):
-    return [int(c) for c in ('{:0' + str(length) + 'b}').format(int(x))[:length]]
-
-END = bytearray([0b00000000]*100)
+import serial
+import time
 
 
 class WS2812BWriter(ledctl.PatternWriter):
@@ -25,35 +12,38 @@ class WS2812BWriter(ledctl.PatternWriter):
 
         self.device = device
         self.port = None
-        self.spi_name = 1
         self.num_lights = num_lights
 
     def open_port(self):
-        self.port = wiringpi2.wiringPiSPISetup(self.spi_name, 8000000)
+        self.port = serial.Serial(port=self.device,
+                # baudrate=9600,
+                baudrate=250000,
+                bytesize=serial.EIGHTBITS,
+                stopbits=serial.STOPBITS_ONE,
+                parity=serial.PARITY_NONE,
+                timeout=2,
+                writeTimeout=0)
+        time.sleep(3)
+        # self.bytes_since_ack = 0
         self.blank()
 
     def close_port(self):
         self.blank()
+        self.port.close()
+        print "Port closed"
 
     def draw_frame(self, frame):
-        #print "frame"
-        print len(frame)
-        commands = bytearray([])
-        for i in range(0, len(frame), 3):
-            red = frame[i] // 2
-            green = frame[i+1] // 2
-            blue = frame[i+2] // 2
-            bits = bit_list(green) + bit_list(red) + bit_list(blue)
-            commands.extend(bytearray([encode_bit(x) for x in bits]))
-        commands.extend(END)
-        print len(commands)
-        self.write_str(str(commands))
-
-    def write_str(self, s):
-        # os.write(self.port, s)
-        wiringpi2.wiringPiSPIDataRW(self.spi_name, s)
+        # assert(len(frame) == 3 * self.num_lights)
+        # self.port.write(bytearray([x // 2 for x in frame]))
+        # self.port.write(bytearray([127, 127, 0, 127, 127, 0, 0xff]))
+        self.port.write(bytearray([x // 2 for x in frame] + ['\xff']))
 
     def blank(self):
-        self.draw_frame([25,0,0]*self.num_lights)
-
+        return
+        '''Turn off all the LEDs. We do this before startup to make sure the
+        power supplies are not loaded by the LEDs when they come online.'''
+        print self.num_lights
+        f = bytearray(reduce(str.__add__, [chr(i) + '\x00\x00\x00' for i in range(self.num_lights)]))
+        print repr(f)
+        self.draw_frame(f)
 
