@@ -17,7 +17,7 @@ class WS2812BWriter(ledctl.PatternWriter):
     def open_port(self):
         self.port = serial.Serial(port=self.device,
                 # baudrate=9600,
-                baudrate=250000,
+                baudrate=230400,
                 bytesize=serial.EIGHTBITS,
                 stopbits=serial.STOPBITS_ONE,
                 parity=serial.PARITY_NONE,
