@@ -16,7 +16,7 @@ DEFAULT_NUM_BOARDS = 83
 # The gradient is intended to be a 1-D bytearray of values in RGB order. Low
 # amplitudes will correspond to the RGB values in the beginning of the byte
 # array, and high amplitudes to the values at the end.
-gradient = pattern.Bemis100Pattern('../Patterns/rainbow166x1.gif',
+gradient = pattern.Bemis100Pattern('static/patterns/Rainbows/rainbow166x1.gif',
         GRADIENT_LEVELS/2).__iter__().next()
 
 
