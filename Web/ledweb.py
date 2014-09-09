@@ -4,6 +4,7 @@ import threading
 import os
 import re
 import json
+import curses.wrapper
 
 import sys
 sys.path.append('..')
@@ -11,6 +12,7 @@ from app_globals import controller, config, writer_types
 from led.pattern import Bemis100Pattern
 from led.beat import BeatPatternRMS, BeatPattern
 from led.graphEq import GraphEqPattern
+from led.curses_writer import CursesWriter
 from led.wave import WavePattern
 from led.new_wave import NewWavePattern
 from led.mix import MixPattern
@@ -66,7 +68,7 @@ class Status(tornado.web.RequestHandler):
 class AddPattern(tornado.web.RequestHandler):
     def get(self):
         params = self.request.arguments
-        print params
+        # print params
         if 'pattern' in params or 'beatpattern' in params \
                 or 'grapheqpattern' in params or 'folder' in params:
             p = None
@@ -87,8 +89,8 @@ class AddPattern(tornado.web.RequestHandler):
                 folder = params['folder'][0]
                 folder = re.sub(r'^/*', '', folder)
                 pattern_path = os.path.join(config['pattern_dir'], folder)
-                print "folder", folder
-                print "pattern path", pattern_path
+                # print "folder", folder
+                # print "pattern path", pattern_path
                 pattern_name = folder
                 p = MixPattern(pattern_path, config['num_lights'])
 
@@ -104,21 +106,21 @@ class AddPattern(tornado.web.RequestHandler):
                     n = -1
 
                 controller.add_pattern(p, n, name=pattern_name)
-                print "Added pattern:", pattern_name
+                # print "Added pattern:", pattern_name
             else:
                 print "Invalid pattern name:", pattern_name
-        print "done"
+        # print "done"
         self.write(json.dumps(dict(success=True)))
 
 class Pause(tornado.web.RequestHandler):
     def get(self):
-        print "pause"
+        # print "pause"
         controller.pause()
         self.write(json.dumps(dict(success=True)))
 
 class Play(tornado.web.RequestHandler):
     def get(self):
-        print "play"
+        # print "play"
         controller.play()
         self.write(json.dumps(dict(success=True)))
 
@@ -134,7 +136,7 @@ class AutoplayOff(tornado.web.RequestHandler):
 
 class Next(tornado.web.RequestHandler):
     def get(self):
-        print "next"
+        # print "next"
         controller.next()
         self.write(json.dumps(dict(success=True)))
 
@@ -152,7 +154,7 @@ class AddWriter(tornado.web.RequestHandler):
         writer_params = writer_types[params['writer_type'][0]]['defaults']
         device = params['port'][0]
         new_writer = writer_class(device, **writer_params)
-        print "Adding writer", new_writer
+        # print "Adding writer", new_writer
         controller.add_writer(new_writer)
 
 class DeviceList(tornado.web.RequestHandler):
@@ -162,10 +164,10 @@ class DeviceList(tornado.web.RequestHandler):
     def get(self):
         writers = writer_types.keys()
         ports = list(list_com_ports())
-        print ports
+        # print ports
         self.write(json.dumps({'writers':writers, 'ports':ports}))
 
-if __name__ == '__main__':
+def main(screen=None):
     handlers = [(r'/', Home),
                 (r'/play', Play),
                 (r'/autoplay_on', AutoplayOn),
@@ -186,6 +188,10 @@ if __name__ == '__main__':
         print "Adding writer", new_writer
         controller.add_writer(new_writer)
 
+    if screen is not None:
+        controller.add_writer(CursesWriter(screen,
+                                           config['num_lights']))
+
     pattern_name = '_off.png'
     pattern_path = os.path.join(config['pattern_dir'], pattern_name)
     p = Bemis100Pattern(pattern_path, config['num_lights'])
@@ -202,3 +208,6 @@ if __name__ == '__main__':
         controller.quit()
         print 'controller exit'
         sys.exit()
+
+if __name__ == '__main__':
+    curses.wrapper(main)

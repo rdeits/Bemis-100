@@ -128,7 +128,7 @@ class LEDController(object):
     def draw_frame(self, frame):
         for i, w in enumerate(self.writers):
             try:
-                w.send_frame(frame)
+                w.draw_frame(frame)
             except IOError:
                 w.exit()
                 del self.writers[i]
