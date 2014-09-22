@@ -16,7 +16,7 @@ from led.new_wave import NewWavePattern
 from led.mix import MixPattern
 from led.bemis100 import Bemis100Writer
 from led.utils import find_patterns
-
+from led.lcm_viewer import LCMWriter
 
 def get_preview_path(pat):
     return os.path.join(config['build_dir'], 'previews', re.sub(r'\.[^.]*$', '.gif', pat))
@@ -185,6 +185,8 @@ if __name__ == '__main__':
         new_writer = writer_class(path, **writer_params)
         print "Adding writer", new_writer
         controller.add_writer(new_writer)
+
+    controller.add_writer(LCMWriter())
 
     pattern_name = '_off.png'
     pattern_path = os.path.join(config['pattern_dir'], pattern_name)

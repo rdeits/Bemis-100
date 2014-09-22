@@ -1,0 +1,9 @@
+package bemis100LCM;
+
+struct frame_t
+{
+	int32_t n_pixels;
+	byte red[n_pixels];
+	byte green[n_pixels];
+	byte blue[n_pixels];
+}
