@@ -1,9 +1,0 @@
-package bemis100;
-
-struct frame_t
-{
-	int32_t n_pixels;
-	int8_t red[n_pixels];
-	int8_t green[n_pixels];
-	int8_t blue[n_pixels];
-}

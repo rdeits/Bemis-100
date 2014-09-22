@@ -8,3 +8,8 @@ ledweb/build
 /build/
 /dist/
 *.so
+pod-build/
+/**/lcmtypes/c/
+/**/lcmtypes/cpp/
+/**/lcmtypes/java/
+/**/lcmtypes/python/
