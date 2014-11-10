@@ -1,22 +1,22 @@
 import tornado.web
 import tornado.ioloop
-import threading
+import subprocess
 import os
 import re
 import json
 
 import sys
 sys.path.append('..')
-from app_globals import controller, config, writer_types
+from app_globals import controller, config, devices
 from led.pattern import Bemis100Pattern
 from led.beat import BeatPatternRMS, BeatPattern
 from led.graphEq import GraphEqPattern
 from led.wave import WavePattern
 from led.new_wave import NewWavePattern
 from led.mix import MixPattern
-from led.bemis100 import Bemis100Writer
+# from led.bemis100 import Bemis100Writer
 from led.utils import find_patterns
-from led.lcm_viewer import LCMWriter
+# from led.lcm_viewer import LCMWriter
 
 def get_preview_path(pat):
     return os.path.join(config['build_dir'], 'previews', re.sub(r'\.[^.]*$', '.gif', pat))
@@ -52,14 +52,8 @@ class Status(tornado.web.RequestHandler):
             status['current'] = format_for_viewer(controller.current.name)
 
         status['queue'] = []
-        # for p in controller.queue:
-        #     if isinstance(p, MixPattern):
-        #         status['queue'].append(format_for_viewer(re.sub(r'\/[^\/]*', '/_mix.png', p.name)))
-        #     else:
-        #         status['queue'].append(format_for_viewer(p.name))
 
         status['playing'] = controller.is_playing()
-        # status['autoplay'] = controller.autoplay
         self.write(json.dumps({'controller_status': status}))
 
 
@@ -122,54 +116,15 @@ class Play(tornado.web.RequestHandler):
         controller.play()
         self.write(json.dumps(dict(success=True)))
 
-class AutoplayOn(tornado.web.RequestHandler):
-    def get(self):
-        controller.autoplay = True
-        self.write(json.dumps(dict(success=True)))
-
-class AutoplayOff(tornado.web.RequestHandler):
-    def get(self):
-        controller.autoplay = False
-        self.write(json.dumps(dict(success=True)))
-
 class Next(tornado.web.RequestHandler):
     def get(self):
         print "next"
         controller.next()
         self.write(json.dumps(dict(success=True)))
 
-class GetWriters(tornado.web.RequestHandler):
-    def get(self):
-        writer_list = []
-        for writer in controller.writers:
-            writer_list.append('%s on device %s' % (writer.__class__.__name__, writer.device))
-        self.write(json.dumps(writer_list))
-
-class AddWriter(tornado.web.RequestHandler):
-    def get(self):
-        params = self.request.arguments
-        writer_class = writer_types[params['writer_type'][0]]['class']
-        writer_params = writer_types[params['writer_type'][0]]['defaults']
-        device = params['port'][0]
-        new_writer = writer_class(device, **writer_params)
-        print "Adding writer", new_writer
-        controller.add_writer(new_writer)
-
-class DeviceList(tornado.web.RequestHandler):
-    """
-    List serial devices which are available for attaching hardware.
-    """
-    def get(self):
-        writers = writer_types.keys()
-        ports = list(list_com_ports())
-        print ports
-        self.write(json.dumps({'writers':writers, 'ports':ports}))
-
 if __name__ == '__main__':
     handlers = [(r'/', Home),
                 (r'/play', Play),
-                (r'/autoplay_on', AutoplayOn),
-                (r'/autoplay_off', AutoplayOff),
                 (r'/add', AddPattern),
                 (r'/pause', Pause),
                 (r'/next', Next),
@@ -178,15 +133,14 @@ if __name__ == '__main__':
                 ]
 
     application = tornado.web.Application(handlers=handlers, static_path='static')
-    for d in config['devices']:
-        writer_class = writer_types[d['type']]['class']
-        writer_params = writer_types[d['type']]['defaults']
-        path = d['path']
-        new_writer = writer_class(path, **writer_params)
-        print "Adding writer", new_writer
-        controller.add_writer(new_writer)
 
-    controller.add_writer(LCMWriter())
+    procs = []
+    for d in devices:
+        args = {'num_lights': config['num_lights']}
+        args.update(d['args'])
+        serialized_args = json.dumps(args)
+        print serialized_args
+        procs.append(subprocess.Popen(['python', '-m', d['class'], serialized_args]))
 
     pattern_name = '_off.png'
     pattern_path = os.path.join(config['pattern_dir'], pattern_name)
@@ -201,6 +155,9 @@ if __name__ == '__main__':
         print 'Exiting...'
         # for c in controller.writers:
         #     c.close_port()
+    finally:
         controller.quit()
         print 'controller exit'
+        for proc in procs:
+            proc.kill()
         sys.exit()

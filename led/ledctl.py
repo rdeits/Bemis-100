@@ -1,11 +1,13 @@
 from __future__ import division
 
-import multiprocessing
+# import multiprocessing
 import threading
+import numpy as np
 import time
-from serial import SerialException
 from collections import namedtuple
 from itertools import count
+import lcm
+import bemis100LCM
 
 QueueItem = namedtuple('QueueItem', ['name', 'pattern', 'reps', 'id'])
 
@@ -17,29 +19,16 @@ class LEDController(object):
 
         self.current = None
 
-        self.writers = []
-        self.writer_count = 0
-        self.done_writer_count = 0
-
         self._play = threading.Event()    # Continue playing; if not set, enter pause mode,
                                                 # staying on the same pattern
 
+        self.lc = lcm.LCM()
         self.new_pattern = threading.Event()
         self.run_thread = threading.Thread(target=self.run)
         self.run_thread.daemon = True
         self.run_thread.start()
 
-    def add_writer(self, writer):
-        i, o = multiprocessing.Pipe()
-        writer.setup(i, o)
-        self.writers.append(writer)
-        self.writer_count += 1
-        writer.start()
-
-    def remove_writer(self, writer):
-        writer.send_frame([])
-
-    def add_pattern(self, pattern, num_times=-1, name='', async=True):
+    def add_pattern(self, pattern, num_times=-1, name=''):
         if pattern is None:
             self.current = None
         else:
@@ -47,9 +36,6 @@ class LEDController(object):
             self.new_pattern.set()
 
         self.play()
-
-        if not async:
-            self.wait_for_finish()
 
     def play(self):
         self._play.set()
@@ -60,20 +46,9 @@ class LEDController(object):
     def is_playing(self):
         return self._play.is_set()
 
-    def assert_writers_alive(self):
-        for w in self.writers:
-            if not w.is_alive():
-                self.writers.remove(w)
-                # raise SystemExit
-
     def wait_for_data(self):
         while self.current is None:
             self.new_pattern.wait(0.1)
-            self.assert_writers_alive()
-
-    def wait_for_finish(self):
-        for w in self.writers:
-            w.wait_for_finish()
 
     def quit(self):
         self.add_pattern(None)
@@ -86,8 +61,6 @@ class LEDController(object):
                 self.draw_pattern(self.current.pattern, self.current.reps)
             else:
                 print "Controller exiting..."
-                for w in self.writers:
-                    w.exit()
 
     def draw_pattern(self, pattern, num_times):
         count = 0
@@ -100,8 +73,6 @@ class LEDController(object):
                 self.exit()
 
             for frame in pattern:
-                self.assert_writers_alive()
-
                 if not self._play.is_set():
                     self._play.wait()
 
@@ -109,126 +80,52 @@ class LEDController(object):
                     self.new_pattern.clear()
                     return
 
-                # print "before draw"
                 self.draw_frame(frame)
-                # print "after draw"
-                # print "drawing frame from pattern:", pattern.filename
 
                 dt = time.time() - row_start
                 if dt < self.frame_dt:
                     time.sleep(self.frame_dt - dt)
                 # else:
                 #     print 'Draw slow by %f sec' % (dt-self.frame_dt)
-                # print dt, time.time() - row_start, 1/(time.time() - row_start)
 
                 row_start = time.time()
 
             count += 1
 
     def draw_frame(self, frame):
-        for i, w in enumerate(self.writers):
-            try:
-                w.send_frame(frame)
-            except IOError:
-                w.exit()
-                del self.writers[i]
+        msg = bemis100LCM.frame_t()
+        msg.n_pixels = len(frame) // 3
+        frame = np.asarray(frame)
+        msg.red = frame[range(0, len(frame), 3)]
+        msg.green = frame[range(1, len(frame), 3)]
+        msg.blue = frame[range(2, len(frame), 3)]
+        self.lc.publish('BEMIS_100_DRAW', msg.encode())
 
-class PatternWriter(threading.Thread):
 
-    def __init__(self, framerate):
-        super(PatternWriter, self).__init__()
-        self.daemon = True
-        self.frame_dt = 1.0 / framerate
+class WriterNode(object):
+    def __init__(self,  channel='BEMIS_100_DRAW', num_lights=150):
+        self.channel = channel
+        self.lc = lcm.LCM()
+        self.lc.subscribe(self.channel, self.handle_frame_message)
+        self.num_lights = num_lights
 
-    def open_port(self):
-        raise NotImplementedError
+    def handle_frame_message(self, channel, data):
+        msg = bemis100LCM.frame_t.decode(data)
+        frame = np.vstack((msg.red, msg.green, msg.blue)).T
+        self.draw_frame(frame)
 
     def draw_frame(self, frame):
         raise NotImplementedError
 
-    def close_port(self):
-        raise NotImplementedError
+    def start(self):
+        while True:
+            self.lc.handle()
 
-    def setup(self, pipe_in, pipe_out):
-        self.pipe_in = pipe_in        # For use inside this process
-        self.pipe_out = pipe_out        # For exterior use
-
-    def send_frame(self, pattern_data):
-        if not self.is_alive():
-            raise SystemExit
-
-        if self.pipe_out.poll():
-            r = self.pipe_out.recv()
-            #if r.has_key('status') and r['status'] == 'exiting':
-            #    raise SystemExit
-
-        self.pipe_out.send(pattern_data)
-
-    def run(self):
-        try:
-            self.open_port()
-        except SerialException, e:
-            print "Couldn't open port, exiting writer"
-            return
-
-        try:
-            while True:
-                frame = self.pipe_in.recv()
-
-                if len(frame) == 0:
-                    raise SystemExit
-
-                self.draw_frame(frame)
-
-        except (KeyboardInterrupt, SystemExit):
-            self.exit()
-            return
-
-    def exit(self):
-        try:
-            while self.pipe_in.poll():  # Empty buffers
-                self.pipe_in.recv()
-            self.pipe_in.send(dict(status='exiting'))
-            self.pipe_in.close()
-        except Exception, e:
-            pass
-        self.close_port()
-        print 'Writer exit'
-
-
-class WebsocketWriter(PatternWriter):
-
-    def __init__(self, framerate, websocket):
-        super(WebsocketWriter, self).__init__(framerate)
-        self.websocket = websocket
-
-    def open_port(self):
+    def stop(self):
         pass
 
-    def draw_frame(self, frame):
-        # print "Drawing frame:", [chr(x) for x in frame]
-        json_frame = ['{"status":"ok", "frame" : [']
+    def blank(self):
+        f = bytearray(reduce(str.__add__, [chr(i) + '\x00\x00\x00' for i in range(self.num_lights)]))
+        self.draw_frame(f)
 
-        for i in range(0, len(frame)-3, 3):
-            r, g, b = frame[i:i+3]
-            json_frame.extend(['"rgb(',str(r),',',str(g),',',str(b),')",'])
-
-        r, g, b = frame[-3:]
-        json_frame.extend(['"rgb(',str(r),',',str(g),',',str(b),')"]}'])
-        json_data = ''.join(json_frame)
-
-        self.client_push(json_data)
-
-    def client_push(self, data):
-        #print 'writing data'
-        try:
-            self.websocket.send(str(data))
-        except IOError:
-            print "Websocket closed"
-            raise
-
-    def close_port(self):
-        self.client_push('{"status":"exiting"}')
-        time.sleep(1.0)
-        self.websocket.close()
 
