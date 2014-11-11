@@ -28,7 +28,7 @@ class WS2812BWriter(ledctl.WriterNode):
         self.blank()
 
     def draw_frame(self, frame):
-        self.port.write(bytearray(frame.reshape((-1,))) + bytearray(['\xff']))
+        self.port.write(bytearray(frame.reshape((-1,)) // 2) + bytearray(['\xff']))
 
 
 if __name__ == '__main__':
