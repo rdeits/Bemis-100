@@ -5,7 +5,7 @@ import sys
 import json
 import threading
 from PyQt4 import QtGui ,QtCore
-from ledctl import WriterNode
+from led.ledctl import WriterNode
 import bemis100LCM
 
 

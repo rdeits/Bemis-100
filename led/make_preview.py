@@ -1,7 +1,6 @@
 from __future__ import division
 
 from new_wave import NewWavePattern
-from wave import WavePattern
 """
 Designed to draw a preview image of a dynamic pattern (running this on a static pattern should produce the image used to generate that pattern.
 """
@@ -33,4 +32,4 @@ if __name__ == "__main__":
     save_preview(extract_rows(NewWavePattern(num_lights=201), 1000), "wave.png")
 
 
-    
+

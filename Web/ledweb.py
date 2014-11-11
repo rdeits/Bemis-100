@@ -9,14 +9,12 @@ import sys
 sys.path.append('..')
 from app_globals import controller, config, devices
 from led.pattern import Bemis100Pattern
-from led.beat import BeatPatternRMS, BeatPattern
-from led.graphEq import GraphEqPattern
-from led.wave import WavePattern
-from led.new_wave import NewWavePattern
-from led.mix import MixPattern
-# from led.bemis100 import Bemis100Writer
+from led.pattern.beat import BeatPattern
+from led.pattern.graphEq import GraphEqPattern
+from led.pattern.wave import WavePattern
+from led.pattern.new_wave import NewWavePattern
+from led.pattern.mix import MixPattern
 from led.utils import find_patterns
-# from led.lcm_viewer import LCMWriter
 
 def get_preview_path(pat):
     return os.path.join(config['build_dir'], 'previews', re.sub(r'\.[^.]*$', '.gif', pat))

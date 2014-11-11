@@ -1,6 +1,6 @@
 from __future__ import division
 
-import ledctl
+import led.ledctl as ledctl
 import serial
 import time
 import sys
