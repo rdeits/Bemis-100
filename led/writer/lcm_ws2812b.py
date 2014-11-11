@@ -28,10 +28,8 @@ class WS2812BWriter(ledctl.WriterNode):
         self.blank()
 
     def draw_frame(self, frame):
-        # assert(len(frame) == 3 * self.num_lights)
-        # self.port.write(bytearray([x // 2 for x in frame]))
-        # self.port.write(bytearray([127, 127, 0, 127, 127, 0, 0xff]))
-        self.port.write(bytearray([x // 2 for x in frame] + ['\xff']))
+
+        self.port.write(bytearray(frame.reshape((-1,))) + bytearray(['\xff']))
 
 
 if __name__ == '__main__':

@@ -125,7 +125,8 @@ class WriterNode(object):
         pass
 
     def blank(self):
-        f = bytearray(reduce(str.__add__, [chr(i) + '\x00\x00\x00' for i in range(self.num_lights)]))
+        f = np.zeros((self.num_lights, 3), dtype=np.int)
+        # f = bytearray(reduce(str.__add__, [chr(i) + '\x00\x00\x00' for i in range(self.num_lights)]))
         self.draw_frame(f)
 
 
