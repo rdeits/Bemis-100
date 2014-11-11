@@ -111,7 +111,9 @@ class WriterNode(object):
 
     def handle_frame_message(self, channel, data):
         msg = bemis100LCM.frame_t.decode(data)
-        frame = np.vstack((msg.red, msg.green, msg.blue)).T
+        frame = np.vstack((np.fromstring(msg.red, dtype=np.uint8),
+                           np.fromstring(msg.green, dtype=np.uint8),
+                           np.fromstring(msg.blue, dtype=np.uint8))).T
         self.draw_frame(frame)
 
     def draw_frame(self, frame):
