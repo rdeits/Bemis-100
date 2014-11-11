@@ -22,7 +22,7 @@ class LEDController(object):
         self._play = threading.Event()    # Continue playing; if not set, enter pause mode,
                                                 # staying on the same pattern
 
-        self.lc = lcm.LCM()
+        self.lc = lcm.LCM('udpm://239.255.76.67:7667?ttl=1')
         self.new_pattern = threading.Event()
         self.run_thread = threading.Thread(target=self.run)
         self.run_thread.daemon = True
