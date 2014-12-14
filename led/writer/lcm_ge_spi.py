@@ -45,7 +45,7 @@ def encode_bulb(addr, brightness, red, green, blue):
     return s
 
 
-class GESPIWriter(ledctl.PatternWriter):
+class GESPIWriter(ledctl.WriterNode):
     def __init__(self, **kwargs):
         ledctl.WriterNode.__init__(self, **kwargs)
         self.open_port()
