@@ -7,7 +7,6 @@ import time
 from collections import namedtuple
 from itertools import count
 import zmq
-import msgpack
 
 QueueItem = namedtuple('QueueItem', ['name', 'pattern', 'reps', 'id'])
 
