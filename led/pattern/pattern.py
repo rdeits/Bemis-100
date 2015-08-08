@@ -28,10 +28,7 @@ class Bemis100Pattern:
         (width, height) = image.size
 
         image = image.convert('RGB')
-        arr = np.array(image, dtype=np.uint8)
-        self.image_data = [bytearray(x) for x in arr.reshape((height, width*3))]
-        # self.image_data = arr.reshape((height, width*3))
-
+        self.image_data = np.array(image, dtype=np.uint8)
 
     def __iter__(self):
         return iter(self.image_data)

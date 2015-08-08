@@ -6,15 +6,15 @@ import numpy as np
 import time
 from collections import namedtuple
 from itertools import count
-import lcm
-import bemis100LCM
+import zmq
+import msgpack
 
 QueueItem = namedtuple('QueueItem', ['name', 'pattern', 'reps', 'id'])
 
 IDCounter = count()
 
 class LEDController(object):
-    def __init__(self, framerate=30):
+    def __init__(self, framerate=30, port=5555):
         self.frame_dt = 1.0 / framerate
 
         self.current = None
@@ -22,7 +22,10 @@ class LEDController(object):
         self._play = threading.Event()    # Continue playing; if not set, enter pause mode,
                                                 # staying on the same pattern
 
-        self.lc = lcm.LCM('udpm://239.255.76.67:7667?ttl=1')
+        self.context = zmq.Context()
+        self.socket = self.context.socket(zmq.PUB)
+        self.port = port
+        self.socket.bind("tcp://*:{:d}".format(self.port))
         self.new_pattern = threading.Event()
         self.run_thread = threading.Thread(target=self.run)
         self.run_thread.daemon = True
@@ -93,42 +96,38 @@ class LEDController(object):
             count += 1
 
     def draw_frame(self, frame):
-        msg = bemis100LCM.frame_t()
-        msg.n_pixels = len(frame) // 3
-        frame = np.asarray(frame)
-        msg.red = frame[range(0, len(frame), 3)]
-        msg.green = frame[range(1, len(frame), 3)]
-        msg.blue = frame[range(2, len(frame), 3)]
-        self.lc.publish('BEMIS_100_DRAW', msg.encode())
+        metadata = {'dtype': str(frame.dtype),
+              'shape': frame.shape}
+        self.socket.send_json(metadata, zmq.SNDMORE)
+        self.socket.send(frame, flags=0,
+                         copy=True, track=False)
 
 
 class WriterNode(object):
-    def __init__(self,  channel='BEMIS_100_DRAW', num_lights=150):
-        self.channel = channel
-        self.lc = lcm.LCM()
-        self.lc.subscribe(self.channel, self.handle_frame_message)
+    def __init__(self,  port=5555, num_lights=150):
+        self.port = port
+        self.context = zmq.Context()
+        self.socket = self.context.socket(zmq.SUB)
+        self.socket.setsockopt_string(zmq.SUBSCRIBE, u"")
+        self.socket.connect("tcp://localhost:{:f}".format(self.port))
         self.num_lights = num_lights
-
-    def handle_frame_message(self, channel, data):
-        msg = bemis100LCM.frame_t.decode(data)
-        frame = np.vstack((np.fromstring(msg.red, dtype=np.uint8),
-                           np.fromstring(msg.green, dtype=np.uint8),
-                           np.fromstring(msg.blue, dtype=np.uint8))).T
-        self.draw_frame(frame)
 
     def draw_frame(self, frame):
         raise NotImplementedError
 
     def start(self):
         while True:
-            self.lc.handle()
+            metadata = self.socket.recv_json(flags=0)
+            message = self.socket.recv(flags=0, copy=True, track=False)
+            buf = buffer(message)
+            frame = np.frombuffer(buf, dtype=metadata['dtype']).reshape(metadata['shape'])
+            self.draw_frame(frame)
 
     def stop(self):
         pass
 
     def blank(self):
         f = np.zeros((self.num_lights, 3), dtype=np.int)
-        # f = bytearray(reduce(str.__add__, [chr(i) + '\x00\x00\x00' for i in range(self.num_lights)]))
         self.draw_frame(f)
 
 

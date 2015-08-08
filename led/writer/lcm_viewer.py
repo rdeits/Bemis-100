@@ -6,7 +6,6 @@ import json
 import threading
 from PyQt4 import QtGui ,QtCore
 from led.ledctl import WriterNode
-import bemis100LCM
 
 
 class LCMViewerWindow(QtGui.QMainWindow, WriterNode):
@@ -15,7 +14,7 @@ class LCMViewerWindow(QtGui.QMainWindow, WriterNode):
         QtGui.QMainWindow.__init__(self, win_parent)
         self.color_data = [QtGui.QColor(0,0,0)]*50
         self._setup_widgets()
-        self.handler_thread = threading.Thread(target=self.run_handler)
+        self.handler_thread = threading.Thread(target=self.start)
         self.handler_thread.daemon = True
         self.handler_thread.start()
 
@@ -24,10 +23,6 @@ class LCMViewerWindow(QtGui.QMainWindow, WriterNode):
         self.show()
         self.central_widget = QtGui.QWidget()
         self.setCentralWidget(self.central_widget)
-
-    def run_handler(self):
-        while True:
-            self.lc.handle()
 
     def paintEvent(self, event):
         self.setMinimumWidth(5*len(self.color_data))
@@ -39,11 +34,10 @@ class LCMViewerWindow(QtGui.QMainWindow, WriterNode):
             qp.fillRect(i*5,0,5,20,color)
         qp.end()
 
-    def handle_frame_message(self, channel, data):
-        msg = bemis100LCM.frame_t.decode(data)
+    def draw_frame(self, frame):
         self.color_data = []
-        for i in range(msg.n_pixels):
-            self.color_data.append(QtGui.QColor(ord(msg.red[i]), ord(msg.green[i]), ord(msg.blue[i])))
+        for pixel in frame:
+            self.color_data.append(QtGui.QColor(*pixel))
         self.central_widget.update()
 
 if __name__ == '__main__':
