@@ -42,7 +42,7 @@ class MixPattern:
                         out = (1 - fade) * frame + fade * last_frame
                     else:
                         out = frame
-                    yield out
+                    yield out.astype(np.uint8)
                     if time.time() - start_time > 120:
                         timed_out = True
                         break
