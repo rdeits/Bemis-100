@@ -5,6 +5,12 @@ import wiringpi2
 import json
 import sys
 
+"""
+be sure to run:
+    gpio load spi 37
+
+before using this
+"""
 
 def encode_bits(bits):
     result = 0

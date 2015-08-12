@@ -3,7 +3,7 @@ from default_devices import DEVICES
 
 config = {'pattern_dir': 'static/build/thumbs',
           'build_dir': 'static/build',
-          'framerate': 30,
+          'framerate': 20,
           'num_lights': 150}
 
 devices = DEVICES
