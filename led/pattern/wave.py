@@ -5,7 +5,7 @@ import pattern
 import numpy as np
 import random
 
-T = .5; # "Tension" 
+T = .5; # "Tension"
 mu = 1; # "mass per length"
 friction = 0.01; # frictional force per velocity
 dt = .5;
@@ -17,7 +17,7 @@ class WavePattern:
         self.pos = np.zeros(self.pixels)
         self.vel = np.zeros(self.pixels)
         self.acc = np.zeros(self.pixels)
-        self.out = np.zeros(self.pixels*3)
+        self.out = np.zeros((self.pixels, 3))
 
     def get_line(self):
         self.update_physics()
@@ -26,15 +26,15 @@ class WavePattern:
             self.add_pulse()
 
         for i in range(self.pixels):
-            self.out[i*3:i*3+3] = self.output_func(self.pos[i])
+            self.out[i] = self.output_func(self.pos[i])
 
-        return bytearray((int(i) for i in self.out))
+        return self.out
 
     def update_physics(self):
         self.acc[1:self.pixels-1] = ((self.pos[2:self.pixels]-\
                 2*self.pos[1:self.pixels-1]+\
                 self.pos[0:self.pixels-2])*T-friction*self.vel[1:self.pixels-1])/mu
-        
+
         self.vel[1:self.pixels-1] += self.acc[1:self.pixels-1]*dt
 
         # self.vel[1:self.pixels-1] *= .95
@@ -62,7 +62,7 @@ class WavePattern:
             pulse_sign = -1
         else:
             pulse_sign = 1
-        self.pos[max(1, pulse_center - pulse_width//2):min(self.pixels-1, 
+        self.pos[max(1, pulse_center - pulse_width//2):min(self.pixels-1,
                                                            pulse_center + pulse_width//2)] = pulse_sign
 
     def __iter__(self):
@@ -83,5 +83,5 @@ class WavePattern:
         self.pos += start_data
         return iter(self.get_line,None)
 
-    
-    
+
+

@@ -12,9 +12,7 @@ class MixPattern:
     def __init__(self, folder, num_lights=50):
         self.folder = os.path.split(folder)[0]
         self.num_lights = num_lights
-        print "1"
         self.pattern_paths = find_patterns_flat(self.folder)
-        print "2"
         self.patterns = []
         self.build_patterns()
 
@@ -32,23 +30,22 @@ class MixPattern:
         last_frame = None
         fade = 1
         while True:
-            p = iters[random.randrange(0, len(iters))]
-            n = random.randrange(1,3)
+            pattern = random.sample(iters, 1)[0]
+            num_repeats = random.randrange(1,3)
             start_time = time.time()
             timed_out = False
             fade = 1
-            for j in range(n):
-                for x in p:
+            for j in range(num_repeats):
+                for frame in pattern:
                     fade = max(fade - 0.05, 0)
                     if fade > 0 and last_frame is not None:
-                        out = bytearray(int(round(c)) for c in np.array(x) * (1-fade) + np.array(last_frame) * fade)
-                        # print map(int, x), map(int, out)
+                        out = (1 - fade) * frame + fade * last_frame
                     else:
-                        out = x
+                        out = frame
                     yield out
                     if time.time() - start_time > 120:
                         timed_out = True
                         break
-                last_frame = x
+                last_frame = frame
                 if timed_out:
                     break
