@@ -103,12 +103,13 @@ class LEDController(object):
 
 
 class WriterNode(object):
-    def __init__(self,  port=5555, num_lights=150):
+    def __init__(self, host="localhost", port=5555, num_lights=150):
         self.port = port
+        self.host = host
         self.context = zmq.Context()
         self.socket = self.context.socket(zmq.SUB)
         self.socket.setsockopt_string(zmq.SUBSCRIBE, u"")
-        self.socket.connect("tcp://localhost:{:d}".format(self.port))
+        self.socket.connect("tcp://{:s}:{:d}".format(self.host, int(self.port)))
         self.num_lights = num_lights
 
     def draw_frame(self, frame):
