@@ -108,7 +108,7 @@ class WriterNode(object):
         self.context = zmq.Context()
         self.socket = self.context.socket(zmq.SUB)
         self.socket.setsockopt_string(zmq.SUBSCRIBE, u"")
-        self.socket.connect("tcp://localhost:{:f}".format(self.port))
+        self.socket.connect("tcp://localhost:{:d}".format(self.port))
         self.num_lights = num_lights
 
     def draw_frame(self, frame):
