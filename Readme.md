@@ -38,3 +38,22 @@ To serve the web interface at `localhost:5000`:
 
 This will take a few minutes the first time it runs to build the thumbnails, mosaics, and animated GIF previews.
 
+
+## Supervisord
+
+supervisord is used on boot to run the `rake serve` task.
+
+Install it by doing:
+	
+	sudo pip install supervisor
+	sudo pip install -U distribute
+
+To edit the supervisord configuration file, kill all processes with supervisord, edit the configuration file, and either reboot or restart supervisord with
+
+`/usr/local/bin/supervisord -c $PROJECT_ROOT/rpi/supervisord.conf`
+
+To get it to run on boot, do `crontab -e` and add the following line:
+
+`@reboot /usr/local/bin/supervisord -c /home/pi/Projects/Bemis-100/Web/supervisord.conf`
+
+You need the `/usr/local/bin` prefix in there to make sure you don't need to run as root.
