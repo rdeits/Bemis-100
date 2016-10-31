@@ -6,7 +6,6 @@ import re
 import json
 
 import sys
-sys.path.append('..')
 from app_globals import controller, config, devices
 from led.pattern import Bemis100Pattern
 from led.pattern.beat import BeatPattern
@@ -15,6 +14,7 @@ from led.pattern.wave import WavePattern
 from led.pattern.new_wave import NewWavePattern
 from led.pattern.mix import MixPattern
 from led.utils import find_patterns
+
 
 def get_preview_path(pat):
     return os.path.join(config['build_dir'], 'previews', re.sub(r'\.[^.]*$', '.gif', pat))
