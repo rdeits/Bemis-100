@@ -50,7 +50,7 @@ Install it by doing:
 
 To edit the supervisord configuration file, kill all processes with supervisord, edit the configuration file, and either reboot or restart supervisord with
 
-`/usr/local/bin/supervisord -c $PROJECT_ROOT/rpi/supervisord.conf`
+`/usr/local/bin/supervisord -c /home/pi/Projects/Bemis-100/Web/supervisord.conf`
 
 To get it to run on boot, do `crontab -e` and add the following line:
 
