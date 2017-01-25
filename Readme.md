@@ -10,16 +10,15 @@ apt-get packages shown in brackets
 - tornado [python-tornado]
 - imagemagick [imagemagick]
 - rake [rake]
+- libjpeg-dev
+- python2.7-dev
+- python-zmq
 
 You'll also need these python modules, which can be installed with Pip:
 
 - Pillow
 - pyserial
 
-
-###Additional packages needed (on Ubuntu or similar)
-- libjpeg-dev
-- python2.7-dev
 
 ###Troubleshooting
 If you get an error about `decoder JPEG not available`, just make sure you've installed `libjpeg-dev` and then do
@@ -57,3 +56,5 @@ To get it to run on boot, do `crontab -e` and add the following line:
 `@reboot /usr/local/bin/supervisord -c /home/pi/Projects/Bemis-100/Web/supervisord.conf`
 
 You need the `/usr/local/bin` prefix in there to make sure you don't need to run as root.
+
+The supervisord configuration currently assumes a hard-coded path to the project at `/home/pi/Projects/Bemis-100`. 
