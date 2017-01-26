@@ -22,7 +22,8 @@ class WS2812BWriter(ledctl.WriterNode):
                 stopbits=serial.STOPBITS_ONE,
                 parity=serial.PARITY_NONE,
                 timeout=2,
-                writeTimeout=0)
+                # writeTimeout=0  # Disabled this because it caused serial timeouts on my dad's lights
+                )
         time.sleep(3)
         # self.bytes_since_ack = 0
         self.blank()
