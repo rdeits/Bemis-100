@@ -1,3 +1,4 @@
+# Samba
 
 	sudo apt-get install samba samba-common-bin
 	sudo vim /etc/samba/samba.conf
@@ -27,3 +28,10 @@ Also had do `sudo chmod -R a+x Web/static/patterns`.
 And I created `sudo vim /etc/samba/smbusers` and added:
 
 	pi="pi"
+
+# Cron
+
+Need to run the `rake` target to generate the patterns and previews periodically. 
+
+	@reboot /usr/local/bin/supervisord -c /home/pi/Projects/Bemis-100/Web/supervisord.conf
+	* * * * * /home/pi/Projects/Bemis-100/Web/generate_patterns.sh > /home/pi/Projects/Bemis-100/Web/logs/generate_patterns.log 2>&1
