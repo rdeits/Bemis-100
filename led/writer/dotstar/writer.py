@@ -17,7 +17,7 @@ class DotstarWriter(ledctl.WriterNode):
 
     def draw_frame(self, frame):
         for (i, pixel) in enumerate(frame):
-            self.strip.setPixelColor(i, pixel[0], pixel[1], pixel[2])
+            self.strip.setPixelColor(i, pixel[1], pixel[0], pixel[2])
         self.strip.show()
 
 if __name__ == '__main__':
