@@ -32,30 +32,3 @@ def find_patterns_flat(d):
             if re.match(PATTERN_RE, f, re.I):
                 patterns.append(os.path.join(root, f))
     return patterns
-
-if platform.system() == "Windows":
-    import _winreg as winreg
-    import itertools
-
-    def list_com_ports():
-        """ Uses the Win32 registry to return an
-            iterator of serial (COM) ports
-            existing on this computer.
-        """
-        path = 'HARDWARE\\DEVICEMAP\\SERIALCOMM'
-        try:
-            key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, path)
-        except WindowsError:
-            raise IterationError
-
-        for i in itertools.count():
-            try:
-                val = winreg.EnumValue(key, i)
-                yield str(val[1])
-            except EnvironmentError:
-                break
-else:
-    from serial.tools.list_ports import comports
-
-    def list_com_ports():
-        return sorted([i[0] for i in comports()],key=lambda x: 'usbmodem' in x, reverse=True)
