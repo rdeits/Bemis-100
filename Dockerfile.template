@@ -23,5 +23,6 @@ RUN rake
 
 # switch on systemd init system in container
 ENV INITSYSTEM on
+ENV PYTHONPATH /usr/src/app
 
 CMD rake serve

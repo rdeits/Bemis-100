@@ -36,6 +36,6 @@ task :default => PREVIEWS
 
 task :serve => PREVIEWS + ["Web/default_devices.py"] do
 	Dir.chdir("Web") do
-		sh "python ledweb.py"
+		sh "python ledweb.py 80"
 	end
 end

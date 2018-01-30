@@ -145,9 +145,13 @@ if __name__ == '__main__':
     p = Bemis100Pattern(pattern_path, config['num_lights'])
     n = -1
     controller.add_pattern(p, n, name=pattern_name)
+    if len(sys.argv) > 1:
+        port = int(sys.argv[1])
+    else:
+        port = 5000
 
     try:
-        application.listen(5000)
+        application.listen(port)
         tornado.ioloop.IOLoop.instance().start()
     except KeyboardInterrupt:
         print 'Exiting...'
