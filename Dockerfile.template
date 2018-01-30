@@ -3,6 +3,7 @@
 FROM resin/%%RESIN_MACHINE_NAME%%-python
 
 RUN apt-get update && apt-get install -yq \
+	python-numpy \
 	imagemagick \
 	rake \
 	libjpeg-dev && \
