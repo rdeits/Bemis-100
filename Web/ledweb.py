@@ -8,8 +8,8 @@ import json
 import sys
 from app_globals import controller, config, devices
 from led.pattern import Bemis100Pattern
-from led.pattern.beat import BeatPattern
-from led.pattern.graphEq import GraphEqPattern
+# from led.pattern.beat import BeatPattern
+# from led.pattern.graphEq import GraphEqPattern
 from led.pattern.wave import WavePattern
 from led.pattern.new_wave import NewWavePattern
 from led.pattern.mix import MixPattern
