@@ -3,9 +3,6 @@
 FROM resin/%%RESIN_MACHINE_NAME%%-python
 
 RUN apt-get update && apt-get install -yq \
-	python-numpy \
-	python-tornado \
-	python-zmq \
 	imagemagick \
 	rake \
 	libjpeg-dev && \
@@ -13,9 +10,14 @@ RUN apt-get update && apt-get install -yq \
 
 WORKDIR /usr/src/app
 
+# Copy requirements.txt first for better cache on later pushes
+COPY ./requirements.txt /requirements.txt
+
+# pip install python deps from requirements.txt on the resin.io build server
+RUN pip install -r /requirements.txt
+
 COPY . ./
 
-RUN pip install Pillow
 RUN rake
 
 # switch on systemd init system in container
