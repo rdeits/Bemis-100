@@ -3,7 +3,7 @@
 FROM resin/%%RESIN_MACHINE_NAME%%-python
 
 RUN apt-get update && apt-get install -yq \
-	python-imaging \
+	python-pil \
 	python-numpy \
 	python-tornado \
 	python-zmq \
