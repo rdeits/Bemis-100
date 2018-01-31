@@ -24,7 +24,8 @@ class LEDController(object):
         self.context = zmq.Context()
         self.socket = self.context.socket(zmq.PUB)
         self.port = port
-        self.socket.bind("tcp://*:{:d}".format(self.port))
+        self.socket.bind("ipc:///tmp/bemis100")
+        # self.socket.bind("tcp://*:{:d}".format(self.port))
         self.new_pattern = threading.Event()
         self.run_thread = threading.Thread(target=self.run)
         self.run_thread.daemon = True
@@ -109,7 +110,8 @@ class WriterNode(object):
         self.context = zmq.Context()
         self.socket = self.context.socket(zmq.SUB)
         self.socket.setsockopt_string(zmq.SUBSCRIBE, u"")
-        self.socket.connect("tcp://{:s}:{:d}".format(self.host, int(self.port)))
+        self.socket.connect("ipc:///tmp/bemis100")
+        # self.socket.connect("tcp://{:s}:{:d}".format(self.host, int(self.port)))
         self.num_lights = num_lights
 
     def draw_frame(self, frame):
