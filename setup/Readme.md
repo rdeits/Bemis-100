@@ -14,3 +14,9 @@
         key_mgmt=WPA-PSK
     }
 
+
+4. Log into the pi and run:
+
+    bash -c "$(curl -sSL https://raw.githubusercontent.com/rdeits/Bemis-100/master/setup/setup_pi.sh)"
+
+5. Enable SPI by editing /boot/config.txt and uncommenting `dtparam=spi=on`

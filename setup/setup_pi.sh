@@ -1,6 +1,7 @@
 set -ex
 
 passwd
+sudo usermod -a -G spi pi
 
 sudo apt update
 sudo apt install -y \
