@@ -26,3 +26,8 @@ crontab -l | awk '{print} END {print "* * * * * /home/pi/Bemis-100/Web/generate_
 
 echo "export PYTHONPATH=/home/pi/Bemis-100" >> /home/pi/.bashrc
 source /home/pi/.bashrc
+
+sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-port 5000
+
+sudo apt install -y \
+	iptables-persistent
