@@ -157,6 +157,9 @@ if __name__ == '__main__':
         print 'Exiting...'
         # for c in controller.writers:
         #     c.close_port()
+    except Exception as e:
+        print e
+        raise
     finally:
         controller.quit()
         print 'controller exit'
