@@ -155,8 +155,12 @@ if __name__ == '__main__':
 
     if os.path.exists("last_command.json"):
         with open("last_command.json", "r") as f:
-            params = json.load(f)
-            handle_add_pattern(params, False)
+            try:
+                params = json.load(f)
+                handle_add_pattern(params, False)
+            except:
+                print "could not load previous command"
+                raise
 
     if len(sys.argv) > 1:
         port = int(sys.argv[1])
