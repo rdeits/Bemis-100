@@ -153,7 +153,7 @@ if __name__ == '__main__':
     n = -1
     controller.add_pattern(p, n, name=pattern_name)
 
-    if os.file.exists("last_command.json"):
+    if os.path.exists("last_command.json"):
         with open("last_command.json", "r") as f:
             params = json.load(f)
             handle_add_pattern(params, False)
