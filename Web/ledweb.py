@@ -100,7 +100,7 @@ def handle_add_pattern(params, persist=True):
     print "done"
     if persist:
         with open("last_command.json", "w") as f:
-            json.dump(f, params)
+            json.dump(params, f)
 
 
 class AddPattern(tornado.web.RequestHandler):
