@@ -158,9 +158,9 @@ if __name__ == '__main__':
             try:
                 params = json.load(f)
                 handle_add_pattern(params, False)
-            except:
+            except Exception as e:
                 print "could not load previous command"
-                raise
+                print e
 
     if len(sys.argv) > 1:
         port = int(sys.argv[1])
