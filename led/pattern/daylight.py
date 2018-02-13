@@ -21,7 +21,6 @@ class DaylightPattern:
 
     def next(self):
         now = datetime.datetime.now().time()
-        print now, self.sunrise, self.sunset
         if self.sunrise < self.sunset:
             # sunrise and sunset on same day, e.g.
             # sunrise at 0600, sunset at 1800
@@ -30,7 +29,6 @@ class DaylightPattern:
             # sunset happens on the subsequent day, e.g.
             # sunrise at 0600, sunset at 0100 the next day
             daylight = now > self.sunrise or now < self.sunset
-        print daylight
 
         if self.last_frame_time is None:
             self.last_frame_time = time.time()
