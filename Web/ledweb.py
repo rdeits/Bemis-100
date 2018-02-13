@@ -12,6 +12,7 @@ from led.pattern import Bemis100Pattern
 # from led.pattern.graphEq import GraphEqPattern
 from led.pattern.wave import WavePattern
 from led.pattern.new_wave import NewWavePattern
+from led.pattern.daylight import DaylightPattern
 from led.pattern.mix import MixPattern
 from led.utils import find_patterns
 
@@ -56,47 +57,46 @@ class Status(tornado.web.RequestHandler):
 
 
 def handle_add_pattern(params, persist=True):
-    print params
-    if 'pattern' in params or 'beatpattern' in params \
-            or 'grapheqpattern' in params or 'folder' in params:
-        p = None
-        track_beat = params['beat'][0] == 'true'
-        graph_eq = 'grapheq' in params
-        if 'pattern' in params:
-            pattern_name = params['pattern'][0]
-            if pattern_name.startswith("Specials"):
-                if "new_wave" in pattern_name:
-                    p = NewWavePattern(num_lights=config['num_lights'])
-                elif "wave" in pattern_name:
-                    p = WavePattern(num_lights=config['num_lights'])
-            else:
-                pattern_path = os.path.join(config['pattern_dir'], pattern_name)
-                if os.path.exists(pattern_path):
-                    p = Bemis100Pattern(pattern_path, config['num_lights'])
-        elif 'folder' in params:
-            folder = params['folder'][0]
-            folder = re.sub(r'^/*', '', folder)
-            pattern_path = os.path.join(config['pattern_dir'], folder)
-            print "folder", folder
-            print "pattern path", pattern_path
-            pattern_name = folder
-            p = MixPattern(pattern_path, config['num_lights'])
-
-        if p is not None:
-            if track_beat:
-                p = BeatPattern(p)
-            elif graph_eq:
-                p = GraphEqPattern(p)
-
-            if 'num_times' in params:
-                n = int(params['num_times'])
-            else:
-                n = -1
-
-            controller.add_pattern(p, n, name=pattern_name)
-            print "Added pattern:", pattern_name
+    p = None
+    track_beat = params['beat'][0] == 'true'
+    graph_eq = 'grapheq' in params
+    if 'pattern' in params:
+        pattern_name = params['pattern'][0]
+        if pattern_name.startswith("Specials"):
+            if "new_wave" in pattern_name:
+                p = NewWavePattern(num_lights=config['num_lights'])
+            elif "wave" in pattern_name:
+                p = WavePattern(num_lights=config['num_lights'])
+            elif "daylight" in pattern_name:
+                p = DaylightPattern(num_lights=config["num_lights"])
         else:
-            print "Invalid pattern name:", pattern_name
+            pattern_path = os.path.join(config['pattern_dir'], pattern_name)
+            if os.path.exists(pattern_path):
+                p = Bemis100Pattern(pattern_path, config['num_lights'])
+    elif 'folder' in params:
+        folder = params['folder'][0]
+        folder = re.sub(r'^/*', '', folder)
+        pattern_path = os.path.join(config['pattern_dir'], folder)
+        pattern_name = folder
+        p = MixPattern(pattern_path, config['num_lights'])
+    elif 'daylight' in params:
+        p = DaylightPattern(config['num_lights'])
+
+    if p is not None:
+        if track_beat:
+            p = BeatPattern(p)
+        elif graph_eq:
+            p = GraphEqPattern(p)
+
+        if 'num_times' in params:
+            n = int(params['num_times'])
+        else:
+            n = -1
+
+        controller.add_pattern(p, n, name=pattern_name)
+        print "Added pattern:", pattern_name
+    else:
+        print "Invalid pattern name:", pattern_name
     print "done"
     if persist:
         with open("last_command.json", "w") as f:
