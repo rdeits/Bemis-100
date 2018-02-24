@@ -12,7 +12,7 @@ class DotstarWriter(ledctl.WriterNode):
         ledctl.WriterNode.__init__(self, **kwargs)
         self.strip = Adafruit_DotStar(self.num_lights)  # Use SPI (pins 10=MOSI, 11=SCLK)
         self.strip.begin()           # Initialize pins for output
-        self.strip.setBrightness(128)
+        self.strip.setBrightness(255)
         self.blank()
 
     def draw_frame(self, frame):
