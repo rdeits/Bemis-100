@@ -30,17 +30,10 @@ class DaylightPattern:
             # sunrise at 0600, sunset at 0100 the next day
             daylight = now > self.sunrise or now < self.sunset
 
-        if self.last_frame_time is None:
-            self.last_frame_time = time.time()
-
-        dt = time.time() - self.last_frame_time
-        x = dt / self.transition.total_seconds()
-
-        self.frame *= (1 - x)
-
         if daylight:
-            self.frame += x * 255
-        self.last_frame_time = time.time()
+            self.frame.fill(255)
+        else:
+            self.frame.fill(0)
         return self.frame.astype(np.uint8)
 
 
