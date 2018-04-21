@@ -20,7 +20,7 @@ class WavePattern:
         self.pos = np.zeros(self.pixels)
         self.vel = np.zeros(self.pixels)
         self.acc = np.zeros(self.pixels)
-        self.out = np.zeros((self.pixels, 3))
+        self.out = np.zeros((self.pixels, 3), dtype=np.int)
 
     def get_line(self):
         self.update_physics()
