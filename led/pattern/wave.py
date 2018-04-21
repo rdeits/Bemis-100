@@ -1,9 +1,12 @@
 from __future__ import division
 
 from multiprocessing import Process, Pipe
-import pattern
-import numpy as np
+import itertools
 import random
+
+import numpy as np
+
+import pattern
 
 T = .5; # "Tension"
 mu = 1; # "mass per length"
@@ -69,9 +72,9 @@ class WavePattern:
         pulse_width = 20
         start_data = np.array(\
                 [0]+\
-                [0]*np.floor(self.pixels/2-(pulse_width//2+1))+\
+                [0]*int(np.floor(self.pixels/2-(pulse_width//2+1)))+\
                 [1]*pulse_width+\
-                [0]*np.ceil(self.pixels/2-(pulse_width//2+1))+\
+                [0]*int(np.ceil(self.pixels/2-(pulse_width//2+1)))+\
                 [0])
         print "start data", start_data
         # start_data = np.array(\
@@ -81,7 +84,8 @@ class WavePattern:
                 # [0])
 
         self.pos += start_data
-        return iter(self.get_line,None)
+        return (self.get_line() for i in itertools.repeat(True))
+        # return iter(self.get_line,None)
 
 
 
