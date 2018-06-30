@@ -1,3 +1,89 @@
+input[type=range] {
+  -webkit-appearance: none;
+  width: 100%;
+}
+input[type=range]:focus {
+  outline: none;
+}
+input[type=range]::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 31.2px;
+  cursor: pointer;
+  box-shadow: 0px 0px 0.2px #000000, 0px 0px 0px #0d0d0d;
+  background: #000000;
+  border-radius: 8.2px;
+  border: 1px solid #ffffff;
+}
+input[type=range]::-webkit-slider-thumb {
+  box-shadow: 1.8px 1.8px 5.9px rgba(255, 255, 255, 0.49), 0px 0px 1.8px rgba(255, 255, 255, 0.49);
+  border: 1px solid #ffffff;
+  height: 25px;
+  width: 34px;
+  border-radius: 28px;
+  background: #ffffff;
+  cursor: pointer;
+  -webkit-appearance: none;
+  margin-top: 1.1px;
+}
+input[type=range]:focus::-webkit-slider-runnable-track {
+  background: #0d0d0d;
+}
+input[type=range]::-moz-range-track {
+  width: 100%;
+  height: 31.2px;
+  cursor: pointer;
+  box-shadow: 0px 0px 0.2px #000000, 0px 0px 0px #0d0d0d;
+  background: #000000;
+  border-radius: 8.2px;
+  border: 1px solid #ffffff;
+}
+input[type=range]::-moz-range-thumb {
+  box-shadow: 1.8px 1.8px 5.9px rgba(255, 255, 255, 0.49), 0px 0px 1.8px rgba(255, 255, 255, 0.49);
+  border: 1px solid #ffffff;
+  height: 25px;
+  width: 34px;
+  border-radius: 28px;
+  background: #ffffff;
+  cursor: pointer;
+}
+input[type=range]::-ms-track {
+  width: 100%;
+  height: 31.2px;
+  cursor: pointer;
+  background: transparent;
+  border-color: transparent;
+  color: transparent;
+}
+input[type=range]::-ms-fill-lower {
+  background: #000000;
+  border: 2px solid #ffffff;
+  border-radius: 16.4px;
+  box-shadow: 0px 0px 0.2px #000000, 0px 0px 0px #0d0d0d;
+}
+input[type=range]::-ms-fill-upper {
+  background: #000000;
+  border: 2px solid #ffffff;
+  border-radius: 16.4px;
+  box-shadow: 0px 0px 0.2px #000000, 0px 0px 0px #0d0d0d;
+}
+input[type=range]::-ms-thumb {
+  box-shadow: 1.8px 1.8px 5.9px rgba(255, 255, 255, 0.49), 0px 0px 1.8px rgba(255, 255, 255, 0.49);
+  border: 2.9px solid #ffffff;
+  width: 34px;
+  border-radius: 28px;
+  background: #ffffff;
+  cursor: pointer;
+  height: 25px;
+}
+input[type=range]:focus::-ms-fill-lower {
+  background: #000000;
+}
+input[type=range]:focus::-ms-fill-upper {
+  background: #0d0d0d;
+}
+
+
+
 body {
 	color: white;
 	background: black;
@@ -21,36 +107,65 @@ a {
 	font-size: large;
 	font-family: sans-serif;
 	padding: 10px;
-	display: block;
+	flex-grow: 1;
 }
 
 .play-controls {
-	float:right;
+	flex-grow: 1;
 }
 
-.play-controls-inner {
-	width: 162px;
-	height: 162px;
-	margin: 11px;
+.controls-header {
+	display: flex;
+	flex-direction: row;
 }
 
 .control-btn {
-	float:left;
+	/*float:left;*/
 	border: 1px solid white;
-	margin-bottom: 3px;
+	margin-bottom: 10px;
 	margin-right: 10px;
 	margin-left: 10px;
-	margin-top: 3px;
+	margin-top: 10px;
 	padding-bottom: 5px;
 	padding-left: 10px;
 	padding-right: 10px;
 	padding-top: 25px;
-	width: 120px;
-	height: 43px;
+	flex-grow: 1;
 	text-align: center;
 	cursor: pointer;
 	font-size: large;
 	font-family: sans-serif;
+}
+
+.speed-controls-block {
+	display: flex;
+}
+
+.speed-controls {
+	border: none;
+	float: left;
+	flex-grow: 1;
+	display: flex;
+}
+
+.speed-slider {
+	flex-grow: 1;
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+
+#speed-label {
+	flex-basis: 30%;
+}
+
+.speed-reset-button {
+	border: 1px solid white;
+	text-align: center;
+	cursor: pointer;
+	font-size: large;
+	font-family: sans-serif;
+	padding: 7px;
+	margin-left: 15px;
 }
 
 .pattern-thumb {
@@ -85,37 +200,31 @@ a {
 	border: 1px solid white;
 }
 
-.queue {
-	/*background: #616161;*/
-	/*overflow: auto;*/
-	margin-right: -30000px;
-}
-
-.queue-holder {
-	overflow: auto;
-	margin: 10px;
-	border: 1px solid white;
-}
-
-.queue-placeholder {
-	height: 150px;
-	border: 1px solid white;
-}
-
 .current {
 	border: 1px solid white;
 	margin: 10px;
 	overflow: auto;
 }
 
-.current-holder {
-	float:left;
+.current-panel {
+	border: 1px solid white;
+	display: flex;
+	flex-direction: column;
 }
 
-.current-and-queue {
-	border: 1px solid white;
-	overflow: auto;
+.current-and-controls {
+	display: flex;
+	flex-direction: row;
 }
+
+.current-holder {
+}
+
+.play-controls {
+	display: flex;
+	flex-direction: column;
+}
+
 
 .container {
 	overflow: auto;

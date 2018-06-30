@@ -11,7 +11,7 @@ import pattern
 T = .5; # "Tension"
 mu = 1; # "mass per length"
 friction = 0.01; # frictional force per velocity
-dt = .5;
+# dt = .5;
 
 class WavePattern:
     def __init__(self,num_lights = 166):
@@ -33,16 +33,16 @@ class WavePattern:
 
         return self.out
 
-    def update_physics(self):
+    def update_physics(self, dt):
         self.acc[1:self.pixels-1] = ((self.pos[2:self.pixels]-\
                 2*self.pos[1:self.pixels-1]+\
                 self.pos[0:self.pixels-2])*T-friction*self.vel[1:self.pixels-1])/mu
 
-        self.vel[1:self.pixels-1] += self.acc[1:self.pixels-1]*dt
+        self.vel[1:self.pixels-1] += self.acc[1:self.pixels-1]*dt*15
 
         # self.vel[1:self.pixels-1] *= .95
 
-        self.pos[1:self.pixels-1] += self.vel[1:self.pixels-1]*dt
+        self.pos[1:self.pixels-1] += self.vel[1:self.pixels-1]*dt*15
 
     def output_func(self, point):
         if point > 1:
@@ -68,7 +68,7 @@ class WavePattern:
         self.pos[max(1, pulse_center - pulse_width//2):min(self.pixels-1,
                                                            pulse_center + pulse_width//2)] = pulse_sign
 
-    def __iter__(self):
+    def start(self):
         pulse_width = 20
         start_data = np.array(\
                 [0]+\
@@ -84,8 +84,31 @@ class WavePattern:
                 # [0])
 
         self.pos += start_data
-        return (self.get_line() for i in itertools.repeat(True))
-        # return iter(self.get_line,None)
+        return self
+
+    def get_frame(self, dt):
+        self.update_physics(dt)
+
+
+
+    # def __iter__(self):
+    #     pulse_width = 20
+    #     start_data = np.array(\
+    #             [0]+\
+    #             [0]*int(np.floor(self.pixels/2-(pulse_width//2+1)))+\
+    #             [1]*pulse_width+\
+    #             [0]*int(np.ceil(self.pixels/2-(pulse_width//2+1)))+\
+    #             [0])
+    #     print "start data", start_data
+    #     # start_data = np.array(\
+    #             # [0]+\
+    #             # [1]*20+\
+    #             # [0]*int(self.pixels-22)+\
+    #             # [0])
+
+    #     self.pos += start_data
+    #     return (self.get_line() for i in itertools.repeat(True))
+    #     # return iter(self.get_line,None)
 
 
 

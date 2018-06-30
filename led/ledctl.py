@@ -15,6 +15,7 @@ IDCounter = count()
 class LEDController(object):
     def __init__(self, framerate=30, port=5555):
         self.frame_dt = 1.0 / framerate
+        self.speed = 1
 
         self.current = None
 
@@ -71,27 +72,28 @@ class LEDController(object):
             if (num_times > 0 and count == num_times):
                 break
 
-            row_start = time.time()
             if pattern is None:
                 self.exit()
 
-            for frame in pattern:
+            t_previous = time.time()
+            state = pattern.start()
+            while True:
                 if not self._play.is_set():
                     self._play.wait()
-
                 if self.new_pattern.is_set():
                     self.new_pattern.clear()
                     return
 
+                now = time.time()
+                dt = now - t_previous
+                t_previous = now
+                frame = state.get_frame(dt * self.speed)
+                if frame is None:
+                    break
                 self.draw_frame(frame)
 
-                dt = time.time() - row_start
                 if dt < self.frame_dt:
-                    time.sleep(self.frame_dt - dt)
-                # else:
-                #     print 'Draw slow by %f sec' % (dt-self.frame_dt)
-
-                row_start = time.time()
+                    time.sleep((self.frame_dt - dt))
 
             count += 1
 
@@ -101,6 +103,9 @@ class LEDController(object):
         self.socket.send_json(metadata, zmq.SNDMORE)
         self.socket.send(frame, flags=0,
                          copy=True, track=False)
+
+    def set_speed(self, speed):
+        self.speed = speed
 
 
 class WriterNode(object):

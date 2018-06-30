@@ -52,7 +52,7 @@ class Status(tornado.web.RequestHandler):
         status['queue'] = []
 
         status['playing'] = controller.is_playing()
-        self.write(json.dumps({'controller_status': status}))
+        self.write(json.dumps({'controller_status': status, 'speed': controller.speed}))
 
 
 def handle_add_pattern(params, persist=True):
@@ -127,6 +127,11 @@ class Next(tornado.web.RequestHandler):
         controller.next()
         self.write(json.dumps(dict(success=True)))
 
+class Speed(tornado.web.RequestHandler):
+    def post(self):
+        controller.set_speed(float(self.get_argument("value", 1)))
+
+
 if __name__ == '__main__':
     handlers = [(r'/', Home),
                 (r'/play', Play),
@@ -134,7 +139,8 @@ if __name__ == '__main__':
                 (r'/pause', Pause),
                 (r'/next', Next),
                 (r'/pattern_groups',PatternGroups),
-                (r'/status',Status)
+                (r'/status',Status),
+                (r'/speed',Speed)
                 ]
 
     application = tornado.web.Application(handlers=handlers, static_path='static')

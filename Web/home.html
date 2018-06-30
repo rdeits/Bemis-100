@@ -35,6 +35,18 @@
 		function on_clear(evt) {
 			add_pattern('_off.png', false);
 		}
+		function on_speed_reset(evt) {
+			set_speed(1.0);
+			$('.speed-slider').val(Math.log10(1.0) * 100);
+		}
+		function set_speed(speed) {
+			$.ajax({
+				url: "/speed",
+				type: "post",
+				data: {value: speed}
+			});
+			set_speed_display(speed);
+		}
 		function show_pattern_button(pat) {
 			oj.div({c:'pattern-block pointer', click:function() {add_pattern(pat.name, false)}}, function () {
 				oj.div(function () {
@@ -88,8 +100,15 @@
 					$('.play-btn').css({display:'inline'});
 					$('.pause-btn').css({display:'none'});
 				}
+				let speed = result['speed'];
+				set_speed_display(speed);
+				$('.speed-slider').val(Math.log10(speed) * 100);
 			});
 		};
+		function set_speed_display(speed) {
+			speed = Math.round(speed * 100);
+			$("#speed-label").text("Speed:\n" + speed + "%");
+		}
 		function run_timed_update() {
 			update_view();
 			setTimeout(run_timed_update, 2000);
@@ -106,27 +125,46 @@
 				});
 			});
 		}
-	$('body').oj(function () {
+		$('body').oj(function () {
 			oj.div({c: 'container'}, function() {
 				oj.div({c: 'header'}, function() {
 					oj.span({c: 'title'}, 'Bemis100');
 				});
-				oj.div({c: 'current-and-queue'}, function() {
-					oj.span('Now Playing:', {c:'now-playing-label'});
-					oj.div({c: 'current-holder'}, function () {
-						oj.div({c: 'current'});
-					});
-					oj.div({c: 'play-controls'}, function() {
-						oj.div({c: 'play-controls-inner'}, function() {
-							oj.div({c: 'control-btn', click:on_clear}, 'Clear');
+				oj.div({c: 'current-panel'}, function() {
+					oj.div({c: 'current-and-controls'}, function () {
+						oj.div({c: 'current-holder'}, function () {
+							oj.div({c: 'current'});
+						});
+						oj.div({c: 'play-controls'}, function() {
+							oj.div({c: 'control-btn', click:on_clear}, 'Off');
 							oj.div({c: 'control-btn play-btn', click:on_play}, 'Play');
 							oj.div({c: 'control-btn pause-btn',click:on_pause}, 'Pause');
+						});
+					});
+					oj.div({c: 'speed-controls-block'}, function() {
+						oj.fieldset({c: 'speed-controls'}, function() {
+							oj.label("Speed:\n100%", {for: "speed", id: "speed-label"});
+							oj.input("speed", {
+								c: "speed-slider",
+								type: "range",
+								name: "speed",
+								min: -200,
+								value: 0,
+								max: 30,
+							});
+							oj.div({c: 'speed-reset-button', click: on_speed_reset}, "Reset");
 						});
 					});
 				});
 				oj.div({c:'all-patterns'});
 			});
 		});
+		$(document).ready(function () {
+			$('.speed-controls').on('input change', function(e) {
+				let speed = Math.pow(10, e.target.value / 100);
+				set_speed(speed);
+			});
+		})
 		update_patterns();
 		update_view();
 		run_timed_update();
