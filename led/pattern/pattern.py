@@ -36,7 +36,7 @@ class PatternState:
         self.frame *= (1 - alpha) / alpha
         self.frame += self.image_data[next_row]
         self.frame *= alpha
-        return self.frame
+        return self.frame.astype(np.uint8)
 
 
 class Bemis100Pattern:
