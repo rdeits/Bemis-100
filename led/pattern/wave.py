@@ -22,8 +22,8 @@ class WavePattern:
         self.acc = np.zeros(self.pixels)
         self.out = np.zeros((self.pixels, 3))
 
-    def get_line(self):
-        self.update_physics()
+    def get_frame(self, dt):
+        self.update_physics(dt)
 
         if random.random() < .01:
             self.add_pulse()
@@ -69,6 +69,7 @@ class WavePattern:
                                                            pulse_center + pulse_width//2)] = pulse_sign
 
     def start(self):
+        print "starting wave pattern"
         pulse_width = 20
         start_data = np.array(\
                 [0]+\
@@ -76,39 +77,7 @@ class WavePattern:
                 [1]*pulse_width+\
                 [0]*int(np.ceil(self.pixels/2-(pulse_width//2+1)))+\
                 [0])
-        print "start data", start_data
-        # start_data = np.array(\
-                # [0]+\
-                # [1]*20+\
-                # [0]*int(self.pixels-22)+\
-                # [0])
 
         self.pos += start_data
         return self
-
-    def get_frame(self, dt):
-        self.update_physics(dt)
-
-
-
-    # def __iter__(self):
-    #     pulse_width = 20
-    #     start_data = np.array(\
-    #             [0]+\
-    #             [0]*int(np.floor(self.pixels/2-(pulse_width//2+1)))+\
-    #             [1]*pulse_width+\
-    #             [0]*int(np.ceil(self.pixels/2-(pulse_width//2+1)))+\
-    #             [0])
-    #     print "start data", start_data
-    #     # start_data = np.array(\
-    #             # [0]+\
-    #             # [1]*20+\
-    #             # [0]*int(self.pixels-22)+\
-    #             # [0])
-
-    #     self.pos += start_data
-    #     return (self.get_line() for i in itertools.repeat(True))
-    #     # return iter(self.get_line,None)
-
-
 
