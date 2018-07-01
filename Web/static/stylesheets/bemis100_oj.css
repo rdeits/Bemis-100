@@ -225,6 +225,12 @@ a {
 	flex-direction: column;
 }
 
+.color-picker-container {
+	border: 1px solid white;
+	display: flex;
+	justify-content: center;
+	padding: 10px;
+}
 
 .container {
 	overflow: auto;

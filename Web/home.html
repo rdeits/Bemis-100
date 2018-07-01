@@ -3,6 +3,7 @@
 		<title>Bemis100</title>
 		<script src="static/js/jquery-2.0.3.min.js" type="text/javascript"></script>
 		<script src="static/js/oj.js" type="text/javascript"></script>
+		<script src="static/js/farbtastic.js" type="text/javascript"></script>
 		<link href="static/stylesheets/bemis100_oj.css" rel='stylesheet' type='text/css'>
 		<meta name="viewport" content="width=device-width">
 	</head>
@@ -46,6 +47,14 @@
 				data: {value: speed}
 			});
 			set_speed_display(speed);
+		}
+		function set_color(color) {
+			$.ajax({
+				url: "/color",
+				type: "post",
+				data: {value: color},
+				success: function() {update_view()}
+			});
 		}
 		function show_pattern_button(pat) {
 			oj.div({c:'pattern-block pointer', click:function() {add_pattern(pat.name, false)}}, function () {
@@ -92,7 +101,23 @@
 		function update_view() {
 			$.getJSON('/status', function(result) {
 				controller_status = result['controller_status'];
-				$('.current').oj(function() {show_current(controller_status.current)});
+				if (controller_status.image) {
+					$('.current').oj(function() {show_current(controller_status.current)});
+				} else {
+					$('.current').oj(function() {
+						oj.div({c:'pattern-block'}, function() {
+							oj.div(function () {
+								oj.div({class:'pattern-thumb',
+									style: {
+										backgroundColor: controller_status.color,
+										width: "150px",
+										height: "150px"
+									}
+								});
+							});
+						});
+					});
+				}
 				if (controller_status.playing) {
 					$('.play-btn').css({display:'none'});
 					$('.pause-btn').css({display:'inline'});
@@ -156,6 +181,9 @@
 						});
 					});
 				});
+				oj.div({c: 'color-picker-container'}, function () {
+					oj.div({id: 'farbtastic'});
+				});
 				oj.div({c:'all-patterns'});
 			});
 		});
@@ -163,6 +191,17 @@
 			$('.speed-controls').on('input change', function(e) {
 				let speed = Math.pow(10, e.target.value / 100);
 				set_speed(speed);
+			});
+			if(/*@cc_on!@*/false || typeof ScriptEngineMajorVersion === "function") {
+				$.browser = {msie: true};
+			}
+			else {
+				$.browser = {msie: false};
+			}
+			let color_picker = $.farbtastic("#farbtastic", {});
+			color_picker.setColor("#ee3333")
+			color_picker.linkTo(function (c) {
+				set_color(c);
 			});
 		})
 		update_patterns();

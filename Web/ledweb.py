@@ -13,6 +13,7 @@ from led.pattern import Bemis100Pattern
 from led.pattern.wave import WavePattern
 from led.pattern.new_wave import NewWavePattern
 from led.pattern.mix import MixPattern
+from led.pattern.color import SolidColor
 from led.utils import find_patterns
 
 
@@ -50,6 +51,12 @@ class Status(tornado.web.RequestHandler):
             status['current'] = format_for_viewer(controller.current.name)
 
         status['queue'] = []
+        if isinstance(controller.current.pattern, Bemis100Pattern) or isinstance(controller.current.pattern, WavePattern):
+            status["image"] = True
+        else:
+            status["image"] = False
+        if isinstance(controller.current.pattern, SolidColor):
+            status["color"] = controller.current.pattern.hex
 
         status['playing'] = controller.is_playing()
         self.write(json.dumps({'controller_status': status, 'speed': controller.speed}))
@@ -131,6 +138,11 @@ class Speed(tornado.web.RequestHandler):
     def post(self):
         controller.set_speed(float(self.get_argument("value", 1)))
 
+class Color(tornado.web.RequestHandler):
+    def post(self):
+        hex = self.get_argument("value", "#ffffff")
+        controller.add_pattern(SolidColor(hex, config['num_lights']), -1, name=hex)
+
 
 if __name__ == '__main__':
     handlers = [(r'/', Home),
@@ -140,7 +152,8 @@ if __name__ == '__main__':
                 (r'/next', Next),
                 (r'/pattern_groups',PatternGroups),
                 (r'/status',Status),
-                (r'/speed',Speed)
+                (r'/speed',Speed),
+                (r'/color', Color)
                 ]
 
     application = tornado.web.Application(handlers=handlers, static_path='static')
