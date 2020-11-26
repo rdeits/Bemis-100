@@ -1,1 +1,1 @@
-from pattern import Bemis100Pattern
+from .pattern import Bemis100Pattern

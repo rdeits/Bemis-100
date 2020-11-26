@@ -6,7 +6,7 @@ import random
 
 import numpy as np
 
-import pattern
+from . import pattern
 
 T = .5; # "Tension"
 mu = 1; # "mass per length"
@@ -16,7 +16,7 @@ friction = 0.01; # frictional force per velocity
 class WavePattern:
     def __init__(self,num_lights = 166):
         self.pixels = num_lights
-        print self.pixels, "pixels in use"
+        print(self.pixels, "pixels in use")
         self.pos = np.zeros(self.pixels)
         self.vel = np.zeros(self.pixels)
         self.acc = np.zeros(self.pixels)
@@ -69,7 +69,7 @@ class WavePattern:
                                                            pulse_center + pulse_width//2)] = pulse_sign
 
     def start(self):
-        print "starting wave pattern"
+        print("starting wave pattern")
         pulse_width = 20
         start_data = np.array(\
                 [0]+\

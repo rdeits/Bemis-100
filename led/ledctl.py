@@ -36,7 +36,7 @@ class LEDController(object):
         if pattern is None:
             self.current = None
         else:
-            self.current = QueueItem(name, pattern, num_times, IDCounter.next())
+            self.current = QueueItem(name, pattern, num_times, next(IDCounter))
             self.new_pattern.set()
 
         self.play()
@@ -64,7 +64,7 @@ class LEDController(object):
             if self.current is not None:
                 self.draw_pattern(self.current.pattern, self.current.reps)
             else:
-                print "Controller exiting..."
+                print("Controller exiting...")
 
     def draw_pattern(self, pattern, num_times):
         count = 0

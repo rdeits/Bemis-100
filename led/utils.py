@@ -26,7 +26,7 @@ def find_patterns(d):
 
 def find_patterns_flat(d):
     patterns = []
-    print d
+    print(d)
     for root, dirs, files in os.walk(d):
         for f in files:
             if re.match(PATTERN_RE, f, re.I):

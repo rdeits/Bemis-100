@@ -1,6 +1,6 @@
 from __future__ import division
 
-from wave import WavePattern
+from .wave import WavePattern
 
 class NewWavePattern(WavePattern):
     def output_func(self, point):

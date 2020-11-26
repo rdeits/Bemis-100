@@ -19,7 +19,7 @@ class MixPattern:
     def build_patterns(self):
         for p in self.pattern_paths:
             pat = Bemis100Pattern(p, self.num_lights)
-            print "created", pat
+            print("created", pat)
             self.patterns.append(pat)
 
     def __iter__(self):

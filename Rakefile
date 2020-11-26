@@ -3,14 +3,14 @@ MIX_FOLDERS = FileList['Web/static/patterns/**/']
 PREVIEWS = []
 
 PATTERNS.each do |pat|
-	preview = pat.sub(/^Web\/static\/patterns/, 'Web/static/build/previews').sub(/\.[^.]*$/, '.gif')
+	preview = pat.sub(/^static\/patterns/, 'static/build/previews').sub(/\.[^.]*$/, '.gif')
 	file preview do
 		outFolder = preview.sub(/\/[^\/]*$/,'')
 		mkdir_p outFolder
 		sh "python3 Utilities/GIF_preview.py #{pat} #{preview}"
 	end
 	PREVIEWS.push(preview)
-	thumb = pat.sub(/^Web\/static\/patterns/, 'Web/static/build/thumbs')
+	thumb = pat.sub(/^static\/patterns/, 'static/build/thumbs')
 	outFolder = thumb.sub(/\/[^\/]*$/,'')
 	file thumb do
 		mkdir_p outFolder
@@ -20,7 +20,7 @@ PATTERNS.each do |pat|
 end
 
 MIX_FOLDERS.each do |folder|
-	outFile = folder.sub(/^Web\/static\/patterns/, 'Web/static/build/thumbs') + '/_mix.png'
+	outFile = folder.sub(/^static\/patterns/, 'static/build/thumbs') + '/_mix.png'
 	inFile = FileList[folder+'/*.*',folder+'/**/*.*']
 	file outFile do
 		sh "python3 Utilities/shuffle_thumb.py #{outFile} #{inFile}"
@@ -35,7 +35,8 @@ end
 task :default => PREVIEWS
 
 task :serve => PREVIEWS + ["Web/default_devices.py"] do
-	Dir.chdir("Web") do
-		sh "python3 ledweb.py 5000"
-	end
+	sh "python3 -m Web.ledweb 5000"
+	# Dir.chdir("Web") do
+		# sh "python3 ledweb.py 5000"
+	# end
 end

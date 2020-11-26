@@ -4,12 +4,12 @@ import subprocess
 import os
 import re
 import json
-
 import sys
-from app_globals import controller, config, devices
-from led.pattern import Bemis100Pattern
+
+from .app_globals import controller, config, devices
 # from led.pattern.beat import BeatPattern
 # from led.pattern.graphEq import GraphEqPattern
+from led.pattern import Bemis100Pattern
 from led.pattern.wave import WavePattern
 from led.pattern.new_wave import NewWavePattern
 from led.pattern.mix import MixPattern
@@ -63,7 +63,7 @@ class Status(tornado.web.RequestHandler):
 
 
 def handle_add_pattern(params, persist=True):
-    print params
+    print(params)
     if 'pattern' in params or 'beatpattern' in params \
             or 'grapheqpattern' in params or 'folder' in params:
         p = None
@@ -71,6 +71,7 @@ def handle_add_pattern(params, persist=True):
         graph_eq = 'grapheq' in params
         if 'pattern' in params:
             pattern_name = params['pattern'][0]
+            print("pattern_name:", pattern_name)
             if pattern_name.startswith("Specials"):
                 if "new_wave" in pattern_name:
                     p = NewWavePattern(num_lights=config['num_lights'])
@@ -84,8 +85,8 @@ def handle_add_pattern(params, persist=True):
             folder = params['folder'][0]
             folder = re.sub(r'^/*', '', folder)
             pattern_path = os.path.join(config['pattern_dir'], folder)
-            print "folder", folder
-            print "pattern path", pattern_path
+            print("folder", folder)
+            print("pattern path", pattern_path)
             pattern_name = folder
             p = MixPattern(pattern_path, config['num_lights'])
 
@@ -101,36 +102,45 @@ def handle_add_pattern(params, persist=True):
                 n = -1
 
             controller.add_pattern(p, n, name=pattern_name)
-            print "Added pattern:", pattern_name
+            print("Added pattern:", pattern_name)
         else:
-            print "Invalid pattern name:", pattern_name
-    print "done"
+            print("Invalid pattern name:", pattern_name)
+    print("done")
     if persist:
+        print("params:", params)
         with open("last_command.json", "w") as f:
             json.dump(params, f)
+
+
+def decode_params(params):
+    for key in ["pattern", "beat"]:
+        if key in params:
+            for (i, p) in enumerate(params[key]):
+                params[key][i] = p.decode()
+    return params
 
 
 class AddPattern(tornado.web.RequestHandler):
     def get(self):
         params = self.request.arguments
-        handle_add_pattern(params)
+        handle_add_pattern(decode_params(params))
         self.write(json.dumps(dict(success=True)))
 
 class Pause(tornado.web.RequestHandler):
     def get(self):
-        print "pause"
+        print("pause")
         controller.pause()
         self.write(json.dumps(dict(success=True)))
 
 class Play(tornado.web.RequestHandler):
     def get(self):
-        print "play"
+        print("play")
         controller.play()
         self.write(json.dumps(dict(success=True)))
 
 class Next(tornado.web.RequestHandler):
     def get(self):
-        print "next"
+        print("next")
         controller.next()
         self.write(json.dumps(dict(success=True)))
 
@@ -156,14 +166,15 @@ if __name__ == '__main__':
                 (r'/color', Color)
                 ]
 
-    application = tornado.web.Application(handlers=handlers, static_path='static')
+    application = tornado.web.Application(handlers=handlers,
+        static_path=os.path.join(os.path.dirname(__file__), "..", "static"))
 
     procs = []
     for d in devices:
         args = {'num_lights': config['num_lights']}
         args.update(d['args'])
         serialized_args = json.dumps(args)
-        print serialized_args
+        print(serialized_args)
         procs.append(subprocess.Popen(['python', '-m', d['class'], serialized_args]))
 
     pattern_name = '_off.png'
@@ -178,8 +189,8 @@ if __name__ == '__main__':
                 params = json.load(f)
                 handle_add_pattern(params, False)
             except Exception as e:
-                print "could not load previous command"
-                print e
+                print("could not load previous command")
+                print(e)
 
     if len(sys.argv) > 1:
         port = int(sys.argv[1])
@@ -190,15 +201,15 @@ if __name__ == '__main__':
         application.listen(port)
         tornado.ioloop.IOLoop.instance().start()
     except KeyboardInterrupt:
-        print 'Exiting...'
+        print('Exiting...')
         # for c in controller.writers:
         #     c.close_port()
     except Exception as e:
-        print e
+        print(e)
         raise
     finally:
         controller.quit()
-        print 'controller exit'
+        print('controller exit')
         for proc in procs:
             proc.kill()
         sys.exit()
