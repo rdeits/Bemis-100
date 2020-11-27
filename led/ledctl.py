@@ -126,7 +126,7 @@ class WriterNode(object):
         while True:
             metadata = self.socket.recv_json(flags=0)
             message = self.socket.recv(flags=0, copy=True, track=False)
-            buf = buffer(message)
+            buf = memoryview(message)
             frame = np.frombuffer(buf, dtype=metadata['dtype']).reshape(metadata['shape'])
             self.draw_frame(frame)
 
