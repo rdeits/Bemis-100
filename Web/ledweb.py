@@ -175,7 +175,7 @@ if __name__ == '__main__':
         args.update(d['args'])
         serialized_args = json.dumps(args)
         print(serialized_args)
-        procs.append(subprocess.Popen(['python', '-m', d['class'], serialized_args]))
+        procs.append(subprocess.Popen([sys.executable, '-m', d['class'], serialized_args]))
 
     pattern_name = '_off.png'
     pattern_path = os.path.join(config['pattern_dir'], pattern_name)
