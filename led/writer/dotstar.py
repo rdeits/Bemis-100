@@ -3,6 +3,7 @@ from __future__ import division
 import led.ledctl as ledctl
 import sys
 import json
+import board
 import adafruit_dotstar as dotstar
 
 
