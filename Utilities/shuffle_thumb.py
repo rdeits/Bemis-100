@@ -9,7 +9,7 @@ def makeShuffleThumb(inFiles, outFile):
     file_iter = itertools.cycle(inFiles)
     for row in range(3):
         for col in range(3):
-            im.paste(Image.open(file_iter.next()).resize((50,50), Image.ANTIALIAS), [col*50, row*50, (col+1)*50, (row+1)*50])
+            im.paste(Image.open(next(file_iter)).resize((50,50), Image.ANTIALIAS), [col*50, row*50, (col+1)*50, (row+1)*50])
     im.save(outFile)
 
 if __name__ == '__main__':
