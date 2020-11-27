@@ -1,5 +1,5 @@
-PATTERNS = FileList['Web/static/patterns/**/*.*']
-MIX_FOLDERS = FileList['Web/static/patterns/**/']
+PATTERNS = FileList['static/patterns/**/*.*']
+MIX_FOLDERS = FileList['static/patterns/**/']
 PREVIEWS = []
 
 PATTERNS.each do |pat|
