@@ -18,16 +18,18 @@ class DotstarWriter(ledctl.WriterNode):
         self.spi.configure(baudrate=4000000)
         self.blank()
 
-    def draw_frame(self, frame):
-        header = bytearray(b'\x00') * 4
+        self._pwm_bytes = np.full((self.num_lights, 1), 255, dtype=np.uint8)
+        self._header = bytearray(b'\x00') * 4
         trailer_size = self.num_lights // 16
         if self.num_lights % 16 != 0:
             trailer_size += 1
-        trailer = bytearray(b'\xff') * trailer_size
+        self._trailer = bytearray(b'\xff') * trailer_size
 
+    def draw_frame(self, frame):
         permutation = (2, 1, 0)
-        data = np.hstack((np.full((self.num_lights, 1), 255, dtype=np.uint8),
-                          frame[:, permutation].astype(np.uint8))).tobytes()
+        permuted = frame.astype(np.uint8)[:, permutation]
+        permuted[permuted < 8] = 0
+        data = np.hstack((self._pwm_bytes, permuted)).tobytes()
         self.spi.write(header + data + trailer)
 
 if __name__ == '__main__':
