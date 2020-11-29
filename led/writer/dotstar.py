@@ -29,8 +29,8 @@ class DotstarWriter(ledctl.WriterNode):
     def draw_frame(self, frame):
         permutation = (2, 1, 0)
         permuted = frame.astype(np.uint8)[:, permutation]
-        permuted[permuted < 8] = 0
-        data = np.hstack((self._pwm_bytes, permuted)).tobytes()
+        scaled = np.right_shift(permuted, 2)
+        data = np.hstack((self._pwm_bytes, scaled)).tobytes()
         self.spi.write(self._header + data + self._trailer)
 
 if __name__ == '__main__':
