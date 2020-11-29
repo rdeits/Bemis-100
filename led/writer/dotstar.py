@@ -12,6 +12,10 @@ class DotstarWriter(ledctl.WriterNode):
 
     def __init__(self, **kwargs):
         ledctl.WriterNode.__init__(self, **kwargs)
+
+        # Construct an SPI interface to control the dotstar LEDs directly. The
+        # `adafruit_dotstar` package also works, but its interface is extremely
+        # slow and cannot keep up with real-time drawing of the LED strip.
         self.spi = busio.SPI(board.SCK, MOSI=board.MOSI)
         while not self.spi.try_lock():
             pass
