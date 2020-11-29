@@ -16,7 +16,6 @@ class DotstarWriter(ledctl.WriterNode):
         while not self.spi.try_lock():
             pass
         self.spi.configure(baudrate=4000000)
-        self.blank()
 
         self._pwm_bytes = np.full((self.num_lights, 1), 255, dtype=np.uint8)
         self._header = bytearray(b'\x00') * 4
@@ -25,12 +24,14 @@ class DotstarWriter(ledctl.WriterNode):
             trailer_size += 1
         self._trailer = bytearray(b'\xff') * trailer_size
 
+        self.blank()
+
     def draw_frame(self, frame):
         permutation = (2, 1, 0)
         permuted = frame.astype(np.uint8)[:, permutation]
         permuted[permuted < 8] = 0
         data = np.hstack((self._pwm_bytes, permuted)).tobytes()
-        self.spi.write(header + data + trailer)
+        self.spi.write(self._header + data + self._trailer)
 
 if __name__ == '__main__':
     DotstarWriter(**json.loads(sys.argv[1])).start()
