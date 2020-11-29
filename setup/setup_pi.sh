@@ -15,6 +15,7 @@ sudo apt install -y \
 	libjpeg-dev \
 	tmux \
 	vim
+sudo python3 -m pip install adafruit-circuitpython-dotstar
 
 git clone https://github.com/rdeits/Bemis-100.git /home/pi/Bemis-100
 cd /home/pi/Bemis-100
