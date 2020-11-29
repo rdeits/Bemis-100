@@ -5,6 +5,7 @@ import sys
 import json
 import board  # provided by adafruit-circuitpython-dotstar
 import busio
+import numpy as np
 
 
 class DotstarWriter(ledctl.WriterNode):
@@ -15,14 +16,6 @@ class DotstarWriter(ledctl.WriterNode):
         while not self.spi.try_lock():
             pass
         self.spi.configure(baudrate=4000000)
-
-        # self.strip = dotstar.DotStar(board.SCK, board.MOSI,
-        #     self.num_lights,
-        #     brightness=0.2,
-        #     auto_write=False)
-        # self.strip = Adafruit_DotStar(self.num_lights)  # Use SPI (pins 10=MOSI, 11=SCLK)
-        # self.strip.begin()           # Initialize pins for output
-        # self.strip.setBrightness(128)
         self.blank()
 
     def draw_frame(self, frame):
@@ -33,12 +26,8 @@ class DotstarWriter(ledctl.WriterNode):
         trailer = bytearray(b'\xff') * trailer_size
 
         permutation = (2, 1, 0)
-        data = np.hstack(np.full((self.num_lights, 1), 255, dtype=np.uint8),
-                         frame[:, p].astype(np.uint8)).tobytes()
-        # for (i, pixel) in enumerate(frame):
-        #     self.strip[i] = (pixel[0], pixel[1], pixel[2])
-        #     # self.strip.setPixelColor(i, pixel[1], pixel[0], pixel[2])
-        # self.strip.show()
+        data = np.hstack((np.full((self.num_lights, 1), 255, dtype=np.uint8),
+                          frame[:, permutation].astype(np.uint8))).tobytes()
         self.spi.write(header + data + trailer)
 
 if __name__ == '__main__':
