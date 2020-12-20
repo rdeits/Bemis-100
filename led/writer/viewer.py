@@ -28,7 +28,6 @@ class LCMViewerWindow(QtGui.QMainWindow, WriterNode):
 
     def set_width(self, width):
         if width != self._width:
-            print "setting:", width
             self.setMinimumWidth(width)
             self.setMaximumWidth(width)
             self._width = width

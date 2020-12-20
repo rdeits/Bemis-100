@@ -1,27 +1,28 @@
 # base-image for python on any machine using a template variable,
 # see more about dockerfile templates here:http://docs.resin.io/pages/deployment/docker-templates
-FROM resin/%%RESIN_MACHINE_NAME%%-python
+FROM balenalib/%%BALENA_MACHINE_NAME%%-python:3-stretch-build
 
-RUN apt-get update && apt-get install -yq \
-	imagemagick \
-	rake \
-	libjpeg-dev && \
-	apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN install_packages imagemagick rake libjpeg-dev libfreetype6 libfreetype6-dev zlib1g-dev
 
 WORKDIR /usr/src/app
 
 # Copy requirements.txt first for better cache on later pushes
-COPY ./requirements.txt /requirements.txt
+COPY requirements.txt requirements.txt
 
 # pip install python deps from requirements.txt on the resin.io build server
-RUN pip install -r /requirements.txt
+RUN pip install -r requirements.txt
 
 COPY . ./
+
+COPY ./Web/default_devices.example.py ./Web/default_devices.py
+
+# Enable udevd so that plugged dynamic hardware devices show up in our container.
+ENV UDEV=1
 
 RUN rake
 
 # switch on systemd init system in container
-ENV INITSYSTEM on
-ENV PYTHONPATH /usr/src/app
+# ENV INITSYSTEM on
+# ENV PYTHONPATH /usr/src/app
 
 CMD rake serve
