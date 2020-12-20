@@ -34,9 +34,7 @@ end
 
 task :default => PREVIEWS
 
-task :serve => PREVIEWS + ["Web/default_devices.py"] do
-	sh "python3 -m Web.ledweb 5000"
-	# Dir.chdir("Web") do
-		# sh "python3 ledweb.py 5000"
-	# end
+task :serve, [:port] => PREVIEWS + ["Web/default_devices.py"] do |task, args|
+	args.with_defaults(:port => '5000')
+	sh "python3 -m Web.ledweb #{args[:port]}"
 end

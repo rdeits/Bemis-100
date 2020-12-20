@@ -6,10 +6,11 @@ RUN install_packages imagemagick rake libjpeg-dev libfreetype6 libfreetype6-dev 
 
 WORKDIR /usr/src/app
 
+# pip install python deps from requirements.txt on the resin.io build server
+RUN pip install wheel
+
 # Copy requirements.txt first for better cache on later pushes
 COPY requirements.txt requirements.txt
-
-# pip install python deps from requirements.txt on the resin.io build server
 RUN pip install -r requirements.txt
 
 COPY . ./
@@ -25,4 +26,4 @@ RUN rake
 # ENV INITSYSTEM on
 # ENV PYTHONPATH /usr/src/app
 
-CMD rake serve
+CMD rake serve[80]
