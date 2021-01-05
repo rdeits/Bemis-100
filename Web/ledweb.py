@@ -113,7 +113,7 @@ def handle_add_pattern(params, persist=True):
 
 
 def decode_params(params):
-    for key in ["pattern", "beat"]:
+    for key in ["pattern", "beat", "folder"]:
         if key in params:
             for (i, p) in enumerate(params[key]):
                 params[key][i] = p.decode()
